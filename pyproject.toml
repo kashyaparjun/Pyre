@@ -1,0 +1,46 @@
+[project]
+name = "pyre-agents"
+version = "0.1.0"
+description = "BEAM-powered agent framework for Python."
+readme = "README.md"
+authors = [
+    { name = "Arjun Kashyap", email = "arjuns062009@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "msgpack>=1.1.0",
+    "pydantic>=2.11.0",
+]
+
+[project.scripts]
+pyre-agents = "pyre_agents.cli:main"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.15.0",
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.26.0",
+    "ruff>=0.11.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+packages = ["pyre_agents"]
+warn_unused_ignores = true
+warn_redundant_casts = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
