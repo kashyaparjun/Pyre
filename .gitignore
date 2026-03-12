@@ -8,3 +8,8 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Elixir build artifacts
+elixir/**/_build/
+elixir/**/deps/
+elixir/**/.elixir_ls/
