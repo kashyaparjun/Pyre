@@ -210,12 +210,75 @@ Last updated: 2026-03-12
    - Python: PASS (`tests/test_phase2_lifecycle.py`)
    - Elixir: PASS (`elixir/pyre_bridge/test/pyre_bridge/agent_lifecycle_test.exs`)
 
+## Phase 4 plan (Packaging)
+
+### Scope
+
+- Ship a production-ready Python package for `pyre_agents` with reproducible builds.
+- Package the Elixir bridge as a releasable runtime artifact with deterministic startup semantics.
+- Define a release workflow that enforces quality gates before publish.
+
+### Deliverables
+
+1. Python distribution hardening:
+   - finalize `pyproject.toml` metadata (name/version/classifiers/python requires/readme/license)
+   - ensure console entry point and package exports are stable
+   - produce `sdist` + wheel via `uv build`
+2. Elixir bridge packaging baseline:
+   - ensure `mix.exs` metadata and application config are release-ready
+   - define runtime config contract for host/port/timeouts and supervision options
+   - document bridge startup contract used by Python integration tests
+3. Release and verification workflow:
+   - CI checks: Ruff, MyPy, Python tests, Elixir tests, packaging smoke checks
+   - artifact verification step (install wheel in clean env + basic runtime smoke test)
+   - versioning and release checklist draft (tagging + changelog expectations)
+4. Packaging docs:
+   - installation instructions for package consumers
+   - compatibility matrix (Python and Elixir/OTP versions)
+   - troubleshooting for bridge startup and local integration setup
+
+### Implementation breakdown (Weeks 9-10)
+
+#### Week 9: Python packaging and metadata
+
+- Audit and finalize `pyproject.toml` packaging fields.
+- Add packaging smoke script:
+  - build artifacts
+  - install wheel in isolated env
+  - run minimal import + CLI invocation check
+- Add tests/checks to prevent missing package data or broken entrypoints.
+
+#### Week 10: Elixir packaging and release gates
+
+- Audit `elixir/pyre_bridge/mix.exs` metadata and app config defaults.
+- Add release-target checks:
+  - `mix test`
+  - bridge boot smoke check via `scripts/start_bridge.exs`
+- Wire end-to-end release gate command sequence and document required pass criteria.
+- Finalize Phase 4 acceptance checklist and mark complete when all gates pass.
+
+### Acceptance criteria
+
+- `uv build` produces valid `sdist` and wheel artifacts locally.
+- Wheel installs in a clean environment and passes import/CLI smoke checks.
+- Python + Elixir quality gates run in one reproducible command sequence.
+- Packaging metadata is complete enough for publication (license/readme/classifiers/version constraints).
+- Bridge startup and runtime configuration are documented and reproducible for users.
+
+### Phase 4 acceptance checklist
+
+1. Python package metadata finalized: TODO
+2. Wheel/sdist build reproducibility verified: TODO
+3. Clean-environment install smoke test passing: TODO
+4. Unified release gate checks for Python + Elixir passing: TODO
+5. Packaging and compatibility docs published: TODO
+
 ### Next actions (Phase 4 kickoff)
 
-1. Finalize packaging metadata and supported Python version matrix.
-2. Build and validate wheel/sdist artifacts with reproducible local build checks.
-3. Add release pipeline checks for Python + Elixir components.
-4. Publish user-facing runtime/supervision API docs and migration notes.
+1. Audit and finalize `pyproject.toml` publish metadata and entry points.
+2. Add packaging smoke command(s) for wheel install/import/CLI verification.
+3. Define a single release-gate command sequence for Python + Elixir checks.
+4. Draft `docs/packaging/phase4.md` with install, compatibility, and release checklist details.
 
 ## Risks to watch
 
