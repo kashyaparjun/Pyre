@@ -1,0 +1,230 @@
+{
+  "warmup_runs": 1,
+  "measured_runs": 3,
+  "run_results": [
+    {
+      "benchmark": "pyre-bridge-phase1",
+      "latency": [
+        {
+          "payload_label": "small",
+          "target_payload_bytes": 512,
+          "samples": 400,
+          "p50_ms": 0.126875,
+          "p95_ms": 0.227334,
+          "p99_ms": 0.279917,
+          "mean_ms": 0.139290515,
+          "min_ms": 0.075042,
+          "max_ms": 0.352791
+        },
+        {
+          "payload_label": "medium",
+          "target_payload_bytes": 10240,
+          "samples": 400,
+          "p50_ms": 0.093833,
+          "p95_ms": 0.161583,
+          "p99_ms": 0.21125,
+          "mean_ms": 0.1022207025,
+          "min_ms": 0.0825,
+          "max_ms": 0.348833
+        },
+        {
+          "payload_label": "large",
+          "target_payload_bytes": 1048576,
+          "samples": 400,
+          "p50_ms": 2.374375,
+          "p95_ms": 2.97925,
+          "p99_ms": 3.217958,
+          "mean_ms": 2.4349590274999997,
+          "min_ms": 1.679292,
+          "max_ms": 18.339625
+        }
+      ],
+      "throughput": [
+        {
+          "payload_label": "small",
+          "target_payload_bytes": 512,
+          "duration_seconds": 1.0,
+          "roundtrips": 8957,
+          "messages_per_second": 8957.0
+        },
+        {
+          "payload_label": "medium",
+          "target_payload_bytes": 10240,
+          "duration_seconds": 1.0,
+          "roundtrips": 8200,
+          "messages_per_second": 8200.0
+        },
+        {
+          "payload_label": "large",
+          "target_payload_bytes": 1048576,
+          "duration_seconds": 1.0,
+          "roundtrips": 378,
+          "messages_per_second": 378.0
+        }
+      ],
+      "acceptance_checks": {
+        "p99_under_1ms_for_small_and_medium": true
+      }
+    },
+    {
+      "benchmark": "pyre-bridge-phase1",
+      "latency": [
+        {
+          "payload_label": "small",
+          "target_payload_bytes": 512,
+          "samples": 400,
+          "p50_ms": 0.106,
+          "p95_ms": 0.203541,
+          "p99_ms": 0.255167,
+          "mean_ms": 0.11754572749999999,
+          "min_ms": 0.07475,
+          "max_ms": 0.30825
+        },
+        {
+          "payload_label": "medium",
+          "target_payload_bytes": 10240,
+          "samples": 400,
+          "p50_ms": 0.096542,
+          "p95_ms": 0.176584,
+          "p99_ms": 0.224666,
+          "mean_ms": 0.10827842,
+          "min_ms": 0.083208,
+          "max_ms": 0.321458
+        },
+        {
+          "payload_label": "large",
+          "target_payload_bytes": 1048576,
+          "samples": 400,
+          "p50_ms": 2.549708,
+          "p95_ms": 3.173875,
+          "p99_ms": 3.321209,
+          "mean_ms": 2.5573619649999997,
+          "min_ms": 1.795375,
+          "max_ms": 3.415084
+        }
+      ],
+      "throughput": [
+        {
+          "payload_label": "small",
+          "target_payload_bytes": 512,
+          "duration_seconds": 1.0,
+          "roundtrips": 8957,
+          "messages_per_second": 8957.0
+        },
+        {
+          "payload_label": "medium",
+          "target_payload_bytes": 10240,
+          "duration_seconds": 1.0,
+          "roundtrips": 8236,
+          "messages_per_second": 8236.0
+        },
+        {
+          "payload_label": "large",
+          "target_payload_bytes": 1048576,
+          "duration_seconds": 1.0,
+          "roundtrips": 362,
+          "messages_per_second": 362.0
+        }
+      ],
+      "acceptance_checks": {
+        "p99_under_1ms_for_small_and_medium": true
+      }
+    },
+    {
+      "benchmark": "pyre-bridge-phase1",
+      "latency": [
+        {
+          "payload_label": "small",
+          "target_payload_bytes": 512,
+          "samples": 400,
+          "p50_ms": 0.120875,
+          "p95_ms": 0.229833,
+          "p99_ms": 0.272583,
+          "mean_ms": 0.1366627825,
+          "min_ms": 0.076917,
+          "max_ms": 0.378333
+        },
+        {
+          "payload_label": "medium",
+          "target_payload_bytes": 10240,
+          "samples": 400,
+          "p50_ms": 0.094542,
+          "p95_ms": 0.171375,
+          "p99_ms": 0.229,
+          "mean_ms": 0.10489281,
+          "min_ms": 0.081667,
+          "max_ms": 0.265417
+        },
+        {
+          "payload_label": "large",
+          "target_payload_bytes": 1048576,
+          "samples": 400,
+          "p50_ms": 2.345834,
+          "p95_ms": 2.90975,
+          "p99_ms": 3.090708,
+          "mean_ms": 2.349067825,
+          "min_ms": 1.606542,
+          "max_ms": 3.375542
+        }
+      ],
+      "throughput": [
+        {
+          "payload_label": "small",
+          "target_payload_bytes": 512,
+          "duration_seconds": 1.0,
+          "roundtrips": 9008,
+          "messages_per_second": 9008.0
+        },
+        {
+          "payload_label": "medium",
+          "target_payload_bytes": 10240,
+          "duration_seconds": 1.0,
+          "roundtrips": 8278,
+          "messages_per_second": 8278.0
+        },
+        {
+          "payload_label": "large",
+          "target_payload_bytes": 1048576,
+          "duration_seconds": 1.0,
+          "roundtrips": 397,
+          "messages_per_second": 397.0
+        }
+      ],
+      "acceptance_checks": {
+        "p99_under_1ms_for_small_and_medium": true
+      }
+    }
+  ],
+  "summary": {
+    "small_p50_ms": {
+      "median": 0.120875,
+      "mean": 0.11791666666666667,
+      "stddev": 0.010747334940967143,
+      "p95": 0.126875,
+      "p99": 0.126875,
+      "ci95": 0.012161754373627364,
+      "min": 0.106,
+      "max": 0.126875
+    },
+    "small_p99_ms": {
+      "median": 0.272583,
+      "mean": 0.26922233333333334,
+      "stddev": 0.012712638802913186,
+      "p95": 0.279917,
+      "p99": 0.279917,
+      "ci95": 0.014385705052545925,
+      "min": 0.255167,
+      "max": 0.279917
+    },
+    "small_messages_per_second": {
+      "median": 8957.0,
+      "mean": 8974.0,
+      "stddev": 29.444863728670914,
+      "p95": 9008.0,
+      "p99": 9008.0,
+      "ci95": 33.32,
+      "min": 8957.0,
+      "max": 9008.0
+    }
+  }
+}

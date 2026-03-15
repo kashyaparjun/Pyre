@@ -1,0 +1,52 @@
+{
+  "benchmark": "pyre-self-benchmark",
+  "platform": {
+    "python": "3.12.7",
+    "system": "Darwin",
+    "release": "25.3.0"
+  },
+  "latency": {
+    "p50_ms": 7.293875,
+    "p90_ms": 11.721417,
+    "p95_ms": 14.619917,
+    "p99_ms": 20.063833,
+    "mean_ms": 7.866646686911205,
+    "min_ms": 3.072875,
+    "max_ms": 41.495709
+  },
+  "resources": {
+    "cpu_percent_avg": 45.684256745131606,
+    "cpu_percent_peak": 48.426116723134875,
+    "cpu_seconds_total": 0.732567,
+    "wall_seconds_total": 1.6035077499982435,
+    "rss_peak_bytes_estimate": 40042496,
+    "python_heap_peak_bytes": 476436
+  },
+  "recovery": {
+    "configured_failure_agents": 10,
+    "agents_restarted": 11,
+    "recovery_ratio": 0.7
+  },
+  "workload": {
+    "agents": 100,
+    "workers": 25,
+    "attempts": 5000,
+    "successes": 4989,
+    "failures": 11,
+    "duration_seconds": 1.5844054580011289,
+    "throughput_ops_per_sec": 3148.8152068688755,
+    "total_messages_outbound": 4786,
+    "total_messages_inbound": 4783
+  },
+  "config": {
+    "agents": 100,
+    "workers": 25,
+    "attempts": 5000,
+    "failure_rate": 0.1,
+    "crash_probability": 0.02,
+    "min_sleep_ms": 3,
+    "max_sleep_ms": 10,
+    "peers_per_agent": 5,
+    "seed": 42
+  }
+}

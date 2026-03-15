@@ -1,0 +1,72 @@
+{
+  "benchmark": "pyre-bridge-stress",
+  "transport": "uds",
+  "config": {
+    "in_flight_depths": [
+      1,
+      8,
+      32,
+      128
+    ],
+    "duration_seconds": 1.0,
+    "payload_bytes": 512,
+    "pool_size": 4,
+    "max_in_flight_per_conn": 64,
+    "enable_backpressure": true
+  },
+  "results": [
+    {
+      "in_flight_depth": 1,
+      "roundtrips": 9822,
+      "duration_seconds": 1.0,
+      "messages_per_second": 9822.0,
+      "p50_ms": 0.084291,
+      "p95_ms": 0.143334,
+      "p99_ms": 0.20325,
+      "max_in_flight_observed": 0,
+      "pool_backpressure_events": 0,
+      "server_backpressure_events": 0
+    },
+    {
+      "in_flight_depth": 8,
+      "roundtrips": 18552,
+      "duration_seconds": 1.0,
+      "messages_per_second": 18552.0,
+      "p50_ms": 0.391292,
+      "p95_ms": 0.545041,
+      "p99_ms": 0.677083,
+      "max_in_flight_observed": 7,
+      "pool_backpressure_events": 0,
+      "server_backpressure_events": 0
+    },
+    {
+      "in_flight_depth": 32,
+      "roundtrips": 22112,
+      "duration_seconds": 1.0,
+      "messages_per_second": 22112.0,
+      "p50_ms": 1.392709,
+      "p95_ms": 1.790791,
+      "p99_ms": 1.9225,
+      "max_in_flight_observed": 31,
+      "pool_backpressure_events": 0,
+      "server_backpressure_events": 0
+    },
+    {
+      "in_flight_depth": 128,
+      "roundtrips": 23235,
+      "duration_seconds": 1.0,
+      "messages_per_second": 23235.0,
+      "p50_ms": 5.524708,
+      "p95_ms": 6.453458,
+      "p99_ms": 6.675375,
+      "max_in_flight_observed": 127,
+      "pool_backpressure_events": 0,
+      "server_backpressure_events": 0
+    }
+  ],
+  "summary": {
+    "best_messages_per_second": 23235.0,
+    "p99_at_max_depth_ms": 6.675375,
+    "avg_p99_ms": 2.369552
+  }
+}

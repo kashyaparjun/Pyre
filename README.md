@@ -2,14 +2,24 @@
 
 BEAM-powered agent framework for Python with cross-runtime supervision between Python and Elixir.
 
+Pyre lets Python developers build actor-style systems with restart semantics inspired by OTP while keeping agent logic in Python.
+
 ## Status
 
 - Phase 1 (Bridge Protocol): complete
 - Phase 2 (Agent Lifecycle): complete
 - Phase 3 (Supervision Trees + bridge health hooks): complete
-- Current focus: Phase 4 (packaging + release workflow)
+- Phase 4 (packaging + release workflow): complete
+- Current focus: Phase 5 (advanced features)
 
 See [PROJECT_STATUS.md](PROJECT_STATUS.md) for milestone details and verification snapshots.
+
+## Why Pyre
+
+- Fault-tolerant agent processes with automatic restarts
+- Familiar Python API with Pydantic state models
+- Cross-runtime validation against an Elixir bridge implementation
+- Reproducible local release gate and package smoke checks
 
 ## What is implemented
 
@@ -39,6 +49,8 @@ Install dependencies:
 
 ```bash
 uv sync
+cd elixir/pyre_bridge
+mix deps.get
 ```
 
 Run Python checks:
@@ -52,14 +64,14 @@ uv run pytest -q
 Run Elixir checks:
 
 ```bash
-cd elixir/pyre_bridge
-mix test
+(cd elixir/pyre_bridge && mix test)
 ```
 
 Run CLI:
 
 ```bash
-uv run pyre-agents
+uv run pyre-agents --version
+uv run pyre-agents demo
 ```
 
 ## Minimal Python runtime example
@@ -88,9 +100,17 @@ class CounterAgent(Agent[CounterState]):
 
 async def main() -> None:
     system = await Pyre.start()
-    ref = await system.spawn(CounterAgent, name="counter", args={"initial": 2})
-    print(await ref.call("increment", {}))  # 3
-    await system.stop_system()
+    try:
+        ref = await system.spawn(CounterAgent, name="counter", args={"initial": 2})
+        print(await ref.call("increment", {}))  # 3
+    finally:
+        await system.stop_system()
+
+
+if __name__ == "__main__":
+    import asyncio
+
+    asyncio.run(main())
 ```
 
 ## Cross-runtime integration
@@ -105,6 +125,31 @@ To run only cross-runtime tests:
 uv run pytest -q tests/test_elixir_python_integration.py
 ```
 
+## Packaging and release gates
+
+- Phase 4 packaging notes: `docs/packaging/phase4.md`
+- Unified local release gate:
+
+```bash
+uv run python scripts/release_gate.py
+```
+
+- Artifact smoke test only:
+
+```bash
+uv build
+uv run python scripts/package_smoke.py
+```
+
+## Documentation
+
+- Packaging and release notes: `docs/packaging/phase4.md`
+- Bridge contract: `docs/contracts/bridge_python_elixir_contract.md`
+- Benchmark notes: `docs/benchmarks/phase1.md`
+- Project plan: `pyre-project-plan.md`
+- Technical architecture: `pyre-technical-document.md`
+- Whitepaper: `pyre-whitepaper.md`
+
 ## Repository map
 
 - Python package: `src/pyre_agents`
@@ -113,8 +158,9 @@ uv run pytest -q tests/test_elixir_python_integration.py
 - Benchmarks and contracts: `docs`
 - Utilities: `scripts`
 
-## Project references
+## Community
 
-- `pyre-technical-document.docx`
-- `pyre-project-plan.docx`
-- `pyre-whitepaper.docx`
+- Contributing guide: `CONTRIBUTING.md`
+- Code of conduct: `CODE_OF_CONDUCT.md`
+- Security policy: `SECURITY.md`
+- License: `LICENSE`

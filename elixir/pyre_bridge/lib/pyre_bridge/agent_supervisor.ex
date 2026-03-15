@@ -17,8 +17,11 @@ defmodule PyreBridge.AgentSupervisor do
   def create_group(name, opts \\ []) when is_binary(name) do
     strategy = Keyword.get(opts, :strategy, :one_for_one)
     parent = Keyword.get(opts, :parent)
-    max_restarts = Keyword.get(opts, :max_restarts, 3)
-    max_seconds = Keyword.get(opts, :max_seconds, 5)
+    max_restarts =
+      Keyword.get(opts, :max_restarts, Application.get_env(:pyre_bridge, :group_max_restarts, 3))
+
+    max_seconds =
+      Keyword.get(opts, :max_seconds, Application.get_env(:pyre_bridge, :group_max_seconds, 5))
 
     child_spec = %{
       id: {AgentGroupSupervisor, name},
@@ -44,7 +47,7 @@ defmodule PyreBridge.AgentSupervisor do
     child_spec = %{
       id: {AgentServer, Keyword.fetch!(opts, :name)},
       start: {AgentServer, :start_link, [opts]},
-      restart: :permanent,
+      restart: :transient,
       type: :worker
     }
 

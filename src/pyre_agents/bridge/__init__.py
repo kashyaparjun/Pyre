@@ -9,8 +9,18 @@ from pyre_agents.bridge.codec import (
 )
 from pyre_agents.bridge.framing import FrameTooLargeError, pack_frame, read_frame, write_frame
 from pyre_agents.bridge.protocol import BridgeEnvelope, BridgeErrorPayload, MessageType
-from pyre_agents.bridge.server import BridgeHealthEvent, BridgeHealthEventType, BridgeServer
-from pyre_agents.bridge.transport import BridgeTransport
+from pyre_agents.bridge.server import (
+    BridgeHealthEvent,
+    BridgeHealthEventType,
+    BridgeServer,
+    BridgeServerMetrics,
+)
+from pyre_agents.bridge.transport import (
+    BridgeMultiplexedConnection,
+    BridgeTransport,
+    BridgeTransportPool,
+    PoolMetrics,
+)
 
 __all__ = [
     "BridgeCodecError",
@@ -21,7 +31,11 @@ __all__ = [
     "FrameTooLargeError",
     "MessageType",
     "BridgeServer",
+    "BridgeServerMetrics",
     "BridgeTransport",
+    "BridgeTransportPool",
+    "BridgeMultiplexedConnection",
+    "PoolMetrics",
     "pack_envelope",
     "pack_frame",
     "pack_payload",

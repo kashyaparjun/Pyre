@@ -30,6 +30,27 @@ class AgentSpec:
     supervisor: str
 
 
+@dataclass(frozen=True)
+class PerformanceConfig:
+    """Runtime tuning knobs for throughput/latency and backpressure behavior."""
+
+    transport_pool_size: int = 1
+    max_in_flight_per_conn: int = 64
+    handler_worker_count: int = 64
+    max_mailbox_depth: int = 2048
+    large_payload_compression_threshold: int = 262_144
+
+
+@dataclass(frozen=True)
+class RuntimeMetrics:
+    """Runtime queue-depth and restart-latency signals."""
+
+    queue_depth_percentiles: dict[str, float]
+    restart_latency_percentiles_ms: dict[str, float]
+    dropped_messages: int
+    backpressure_rejections: int
+
+
 @dataclass
 class ManagedAgent:
     spec: AgentSpec
@@ -38,6 +59,9 @@ class ManagedAgent:
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
     terminated: bool = False
     crash_times: deque[float] = field(default_factory=deque)
+    pending_messages: int = 0
+    max_pending_messages: int = 0
+    dropped_messages: int = 0
 
 
 @dataclass
@@ -56,6 +80,10 @@ class PyreSystem:
         self._agents: dict[str, ManagedAgent] = {}
         self._worker = Worker()
         self._started = False
+        self._performance = PerformanceConfig()
+        self._handler_slots = asyncio.Semaphore(self._performance.handler_worker_count)
+        self._restart_latencies_ms: list[float] = []
+        self._backpressure_rejections = 0
         self._supervisors: dict[str, SupervisorGroup] = {
             ROOT_SUPERVISOR: SupervisorGroup(
                 spec=SupervisorSpec(
@@ -68,8 +96,11 @@ class PyreSystem:
         }
 
     @classmethod
-    async def start(cls) -> PyreSystem:
+    async def start(cls, performance: PerformanceConfig | None = None) -> PyreSystem:
         runtime = cls()
+        if performance is not None:
+            runtime._performance = performance
+            runtime._handler_slots = asyncio.Semaphore(performance.handler_worker_count)
         runtime._started = True
         return runtime
 
@@ -179,37 +210,61 @@ class PyreSystem:
         managed = self._get_managed(name)
         msg = {"type": type_, "payload": payload}
         ctx = AgentContext(self, name)
+        self._reserve_mailbox_slot(managed, drop_on_overflow=False)
         async with managed.lock:
             self._ensure_not_terminated(managed)
             try:
-                outcome = await self._worker.run_call(managed.agent, managed.state, msg, ctx)
+                async with self._handler_slots:
+                    outcome = await self._worker.run_call(managed.agent, managed.state, msg, ctx)
                 managed.state = outcome.new_state
                 return outcome.reply
             except Exception as exc:
                 await self._handle_crash(managed, exc)
                 raise AgentInvocationError(f"Agent '{name}' crashed during call") from exc
+            finally:
+                self._release_mailbox_slot(managed)
 
     async def cast(self, name: str, type_: str, payload: dict[str, Any]) -> None:
         managed = self._get_managed(name)
         msg = {"type": type_, "payload": payload}
         ctx = AgentContext(self, name)
+        if not self._reserve_mailbox_slot(managed, drop_on_overflow=True):
+            return
         async with managed.lock:
             self._ensure_not_terminated(managed)
             try:
-                managed.state = await self._worker.run_cast(managed.agent, managed.state, msg, ctx)
+                async with self._handler_slots:
+                    managed.state = await self._worker.run_cast(
+                        managed.agent,
+                        managed.state,
+                        msg,
+                        ctx,
+                    )
             except Exception as exc:
                 await self._handle_crash(managed, exc)
+            finally:
+                self._release_mailbox_slot(managed)
 
     async def info(self, name: str, type_: str, payload: dict[str, Any]) -> None:
         managed = self._get_managed(name)
         msg = {"type": type_, "payload": payload}
         ctx = AgentContext(self, name)
+        if not self._reserve_mailbox_slot(managed, drop_on_overflow=True):
+            return
         async with managed.lock:
             self._ensure_not_terminated(managed)
             try:
-                managed.state = await self._worker.run_info(managed.agent, managed.state, msg, ctx)
+                async with self._handler_slots:
+                    managed.state = await self._worker.run_info(
+                        managed.agent,
+                        managed.state,
+                        msg,
+                        ctx,
+                    )
             except Exception as exc:
                 await self._handle_crash(managed, exc)
+            finally:
+                self._release_mailbox_slot(managed)
 
     async def send_after(
         self, name: str, type_: str, payload: dict[str, Any], delay_ms: int
@@ -243,12 +298,14 @@ class PyreSystem:
             await self._restart_agent(child)
 
     async def _restart_agent(self, managed: ManagedAgent) -> None:
+        restart_begin = monotonic()
         replacement = type(managed.agent)()
         state = await replacement.init(**managed.spec.args)
         if not isinstance(state, BaseModel):
             raise TypeError("Agent.init must return a Pydantic BaseModel")
         managed.agent = replacement
         managed.state = state
+        self._restart_latencies_ms.append((monotonic() - restart_begin) * 1000)
 
     def _restart_targets(self, group: SupervisorGroup, crashed_name: str) -> list[str]:
         if crashed_name not in group.children:
@@ -295,13 +352,55 @@ class PyreSystem:
         if managed.terminated:
             raise AgentTerminatedError(f"Agent '{managed.spec.name}' is terminated")
 
+    def _reserve_mailbox_slot(self, managed: ManagedAgent, *, drop_on_overflow: bool) -> bool:
+        managed.pending_messages += 1
+        if managed.pending_messages > managed.max_pending_messages:
+            managed.max_pending_messages = managed.pending_messages
+        if managed.pending_messages <= self._performance.max_mailbox_depth:
+            return True
+
+        managed.pending_messages = max(0, managed.pending_messages - 1)
+        managed.dropped_messages += 1
+        self._backpressure_rejections += 1
+        if drop_on_overflow:
+            return False
+        raise AgentInvocationError(
+            "Agent "
+            f"'{managed.spec.name}' mailbox saturated "
+            f"(>{self._performance.max_mailbox_depth})"
+        )
+
+    def _release_mailbox_slot(self, managed: ManagedAgent) -> None:
+        managed.pending_messages = max(0, managed.pending_messages - 1)
+
+    def metrics(self) -> RuntimeMetrics:
+        pending_depths = [float(agent.max_pending_messages) for agent in self._agents.values()]
+        restart_latencies = list(self._restart_latencies_ms)
+        dropped_messages = sum(agent.dropped_messages for agent in self._agents.values())
+        return RuntimeMetrics(
+            queue_depth_percentiles=self._percentiles(pending_depths),
+            restart_latency_percentiles_ms=self._percentiles(restart_latencies),
+            dropped_messages=dropped_messages,
+            backpressure_rejections=self._backpressure_rejections,
+        )
+
+    def _percentiles(self, samples: list[float]) -> dict[str, float]:
+        if not samples:
+            return {"p50": 0.0, "p95": 0.0, "p99": 0.0}
+        ordered = sorted(samples)
+        return {
+            "p50": ordered[int(round((len(ordered) - 1) * 0.50))],
+            "p95": ordered[int(round((len(ordered) - 1) * 0.95))],
+            "p99": ordered[int(round((len(ordered) - 1) * 0.99))],
+        }
+
 
 class Pyre:
     """Public lifecycle API."""
 
     @staticmethod
-    async def start() -> PyreSystem:
-        return await PyreSystem.start()
+    async def start(performance: PerformanceConfig | None = None) -> PyreSystem:
+        return await PyreSystem.start(performance=performance)
 
     @staticmethod
     def from_runtime(runtime: PyreSystem) -> Callable[[], PyreSystem]:

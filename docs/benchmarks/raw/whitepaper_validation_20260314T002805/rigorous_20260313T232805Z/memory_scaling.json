@@ -1,0 +1,62 @@
+{
+  "python": {
+    "feasible": true,
+    "runs": [
+      {
+        "agents": 100,
+        "rss_bytes": 88473600
+      },
+      {
+        "agents": 1000,
+        "rss_bytes": 88489984
+      },
+      {
+        "agents": 5000,
+        "rss_bytes": 92684288
+      },
+      {
+        "agents": 10000,
+        "rss_bytes": 103235584
+      }
+    ],
+    "fit": {
+      "bytes_per_agent": 1507.3106008250622,
+      "base_bytes": 87153938.83167912
+    },
+    "base_runtime_bytes_estimate": 90587136.0
+  },
+  "elixir_bridge": {
+    "feasible": true,
+    "runs": [
+      {
+        "agents": 100,
+        "baseline_rss_bytes": 99057664,
+        "rss_bytes": 97878016,
+        "delta_bytes": 0
+      },
+      {
+        "agents": 1000,
+        "baseline_rss_bytes": 96894976,
+        "rss_bytes": 97189888,
+        "delta_bytes": 294912
+      },
+      {
+        "agents": 5000,
+        "baseline_rss_bytes": 99762176,
+        "rss_bytes": 116850688,
+        "delta_bytes": 17088512
+      },
+      {
+        "agents": 10000,
+        "baseline_rss_bytes": 98942976,
+        "rss_bytes": 146685952,
+        "delta_bytes": 47742976
+      }
+    ],
+    "fit": {
+      "bytes_per_agent": 4918.2448556141,
+      "base_bytes": -3514335.5438467525
+    },
+    "base_runtime_bytes_estimate": 99000320.0
+  }
+}

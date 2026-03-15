@@ -1,0 +1,1098 @@
+{
+  "benchmark": "whitepaper-claim-validation",
+  "generated_at_utc": "2026-03-13T23:26:10.113285+00:00",
+  "profile": "quick",
+  "claim_scope": "all",
+  "require_rigorous_for_validated": true,
+  "transports": "both",
+  "publication_ready": false,
+  "environment": {
+    "python": "3.12.7",
+    "platform": "Darwin 25.3.0 (arm64)",
+    "mix_version": "Erlang/OTP 28 [erts-16.3] [source] [64-bit] [smp:8:8] [ds:8:8:10] [async-threads:1] [jit] [dtrace] |  | Mix 1.19.5 (compiled with Erlang/OTP 28)",
+    "erlang_version": "\"28\""
+  },
+  "controls": {
+    "warmup_runs": 1,
+    "measured_runs": 3,
+    "rigorous_min_runs_target": 10,
+    "notes": [
+      "Local workstation measurements include hardware and scheduler variance.",
+      "UDS claims require UDS transport measurements.",
+      "Claims are evaluated against March 2026 whitepaper text."
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "E1",
+      "quote": "The bridge round-trip for a typical agent message (under 1KB of state) adds 0.1-0.3ms of latency.",
+      "claim_class": "empirical",
+      "evidence_type": "benchmark",
+      "metric": "bridge.uds.small.p50_ms and bridge.uds.small.p99_ms",
+      "threshold": "validated if p50 in [0.1,0.3] and p99 <= 0.5",
+      "partial_rule": "partial if p50 <= 0.5 and p99 <= 1.0",
+      "caveats": "Requires UDS benchmark transport source.",
+      "required_profile": "rigorous",
+      "transport_required": "uds",
+      "suite_keys": [
+        "bridge_suite"
+      ],
+      "class": "empirical"
+    },
+    {
+      "claim_id": "E2",
+      "quote": "The Unix domain socket bridge supports 50,000-100,000 messages per second.",
+      "claim_class": "empirical",
+      "evidence_type": "benchmark",
+      "metric": "bridge.uds.small.messages_per_second",
+      "threshold": "validated if median >= 50000",
+      "partial_rule": "partial if median >= 10000",
+      "caveats": "UDS source of truth only.",
+      "required_profile": "rigorous",
+      "transport_required": "uds",
+      "suite_keys": [
+        "bridge_suite"
+      ],
+      "class": "empirical"
+    },
+    {
+      "claim_id": "E3",
+      "quote": "Booting the Elixir runtime adds 500-1000ms to application startup.",
+      "claim_class": "empirical",
+      "evidence_type": "benchmark",
+      "metric": "startup.boot_ms median",
+      "threshold": "validated if median in [500,1000]",
+      "partial_rule": "partial if median in [300,1500]",
+      "caveats": "Local workstation variance expected.",
+      "required_profile": "rigorous",
+      "transport_required": "none",
+      "suite_keys": [
+        "startup_overhead"
+      ],
+      "class": "empirical"
+    },
+    {
+      "claim_id": "E4",
+      "quote": "Supervisors restart child processes when they fail with one_for_one, one_for_all, and rest_for_one semantics.",
+      "claim_class": "empirical",
+      "evidence_type": "integration_test",
+      "metric": "recovery.restart_success_ratio and strategy checks",
+      "threshold": "validated if ratio >= 0.99 and all checks pass",
+      "partial_rule": "partial if ratio >= 0.90 and 2/3 checks pass",
+      "caveats": "Bridge recovery checks over Elixir runtime.",
+      "required_profile": "quick",
+      "transport_required": "tcp",
+      "suite_keys": [
+        "failure_recovery"
+      ],
+      "class": "empirical"
+    },
+    {
+      "claim_id": "E5",
+      "quote": "The Elixir runtime adds approximately 30MB of base memory and each agent on the Elixir side consumes 2-5KB.",
+      "claim_class": "empirical",
+      "evidence_type": "benchmark",
+      "metric": "memory_scaling.elixir.base_runtime_bytes and bytes_per_agent",
+      "threshold": "validated if base in [20,45]MB and slope in [2,5]KB",
+      "partial_rule": "partial if base in [15,60]MB and slope <= 10KB",
+      "caveats": "RSS is allocator/platform dependent.",
+      "required_profile": "rigorous",
+      "transport_required": "none",
+      "suite_keys": [
+        "memory_scaling"
+      ],
+      "class": "empirical"
+    },
+    {
+      "claim_id": "E6",
+      "quote": "No preemption within Python: CPU-intensive handler work can block the Python worker/event loop.",
+      "claim_class": "empirical",
+      "evidence_type": "benchmark",
+      "metric": "fairness.python_no_preemption_blocking_factor_p99",
+      "threshold": "validated if blocking_factor >= 2.0",
+      "partial_rule": "partial if blocking_factor >= 1.3",
+      "caveats": "Synthetic tail-latency amplification benchmark.",
+      "required_profile": "quick",
+      "transport_required": "none",
+      "suite_keys": [
+        "scheduler_fairness"
+      ],
+      "class": "empirical"
+    },
+    {
+      "claim_id": "A1",
+      "quote": "Developers write pure Python and interact with Python APIs.",
+      "claim_class": "architectural",
+      "evidence_type": "static_analysis",
+      "metric": "python_api_surface_present",
+      "threshold": "validated if public Python runtime APIs are available and documented",
+      "partial_rule": "partial if APIs exist but docs/tests missing",
+      "caveats": "Non-benchmark architectural claim.",
+      "required_profile": "quick",
+      "transport_required": "none",
+      "suite_keys": [
+        "architectural_evidence"
+      ],
+      "class": "architectural"
+    },
+    {
+      "claim_id": "A2",
+      "quote": "State is serialized across the bridge and constrained to serializable models.",
+      "claim_class": "architectural",
+      "evidence_type": "static_analysis",
+      "metric": "state_validation_and_bridge_codec_checks",
+      "threshold": "validated if BaseModel enforcement + codec tests present",
+      "partial_rule": "partial if only one evidence source present",
+      "caveats": "Validated through code/test evidence links.",
+      "required_profile": "quick",
+      "transport_required": "none",
+      "suite_keys": [
+        "architectural_evidence"
+      ],
+      "class": "architectural"
+    },
+    {
+      "claim_id": "A3",
+      "quote": "Bridge/runtime observability provides lifecycle and error event visibility.",
+      "claim_class": "architectural",
+      "evidence_type": "integration_test",
+      "metric": "bridge_health_event_types_and_tests",
+      "threshold": "validated if event API + integration tests exist",
+      "partial_rule": "partial if API exists without tests",
+      "caveats": "Evidence from health event hooks and tests.",
+      "required_profile": "quick",
+      "transport_required": "none",
+      "suite_keys": [
+        "architectural_evidence"
+      ],
+      "class": "architectural"
+    },
+    {
+      "claim_id": "F1",
+      "quote": "Distributed clustering for cross-machine agents is a future direction.",
+      "claim_class": "future/distributed",
+      "evidence_type": "blocked_future",
+      "metric": "blocked_by_local_single_node_scope",
+      "threshold": "unsupported_in_scope",
+      "partial_rule": "n/a",
+      "caveats": "Requires multi-node distributed implementation.",
+      "required_profile": "quick",
+      "transport_required": "none",
+      "suite_keys": [],
+      "class": "future/distributed"
+    },
+    {
+      "claim_id": "F2",
+      "quote": "Hot code reloading for Python handlers is a future direction.",
+      "claim_class": "future/distributed",
+      "evidence_type": "blocked_future",
+      "metric": "blocked_by_unimplemented_feature",
+      "threshold": "unsupported_in_scope",
+      "partial_rule": "n/a",
+      "caveats": "Requires explicit runtime/versioned handler infrastructure.",
+      "required_profile": "quick",
+      "transport_required": "none",
+      "suite_keys": [],
+      "class": "future/distributed"
+    },
+    {
+      "claim_id": "F3",
+      "quote": "Streaming bridge message types are a future direction.",
+      "claim_class": "future/distributed",
+      "evidence_type": "blocked_future",
+      "metric": "blocked_by_protocol_extension_not_present",
+      "threshold": "unsupported_in_scope",
+      "partial_rule": "n/a",
+      "caveats": "Current protocol is request/response oriented.",
+      "required_profile": "quick",
+      "transport_required": "none",
+      "suite_keys": [],
+      "class": "future/distributed"
+    },
+    {
+      "claim_id": "F4",
+      "quote": "WASM-based isolation as an alternative is a future direction.",
+      "claim_class": "future/distributed",
+      "evidence_type": "blocked_future",
+      "metric": "blocked_by_unimplemented_runtime_mode",
+      "threshold": "unsupported_in_scope",
+      "partial_rule": "n/a",
+      "caveats": "No WASM execution backend in current repository.",
+      "required_profile": "quick",
+      "transport_required": "none",
+      "suite_keys": [],
+      "class": "future/distributed"
+    }
+  ],
+  "claim_verdicts": [
+    {
+      "claim_id": "E1",
+      "status": "partially_validated",
+      "detail": "p50=0.0641ms p99=0.1671ms",
+      "class": "empirical",
+      "evidence_type": "benchmark",
+      "gate_status": "provisional_quick",
+      "required_profile": "rigorous",
+      "transport_source": "uds",
+      "blockers": []
+    },
+    {
+      "claim_id": "E2",
+      "status": "partially_validated",
+      "detail": "median_mps=12663.0",
+      "class": "empirical",
+      "evidence_type": "benchmark",
+      "gate_status": "provisional_quick",
+      "required_profile": "rigorous",
+      "transport_source": "uds",
+      "blockers": []
+    },
+    {
+      "claim_id": "E3",
+      "status": "partially_validated",
+      "detail": "boot_median=458.3ms",
+      "class": "empirical",
+      "evidence_type": "benchmark",
+      "gate_status": "provisional_quick",
+      "required_profile": "rigorous",
+      "transport_source": "none",
+      "blockers": []
+    },
+    {
+      "claim_id": "E4",
+      "status": "validated",
+      "detail": "ratio=1.000 checks=3/3",
+      "class": "empirical",
+      "evidence_type": "integration_test",
+      "gate_status": "meets_gate",
+      "required_profile": "quick",
+      "transport_source": "tcp",
+      "blockers": []
+    },
+    {
+      "claim_id": "E5",
+      "status": "not_validated",
+      "detail": "base=93.26MB slope=1.51KB/agent",
+      "class": "empirical",
+      "evidence_type": "benchmark",
+      "gate_status": "not_applicable",
+      "required_profile": "rigorous",
+      "transport_source": "none",
+      "blockers": []
+    },
+    {
+      "claim_id": "E6",
+      "status": "not_validated",
+      "detail": "blocking_factor=1.12",
+      "class": "empirical",
+      "evidence_type": "benchmark",
+      "gate_status": "not_applicable",
+      "required_profile": "quick",
+      "transport_source": "none",
+      "blockers": []
+    },
+    {
+      "claim_id": "A1",
+      "status": "validated",
+      "detail": "api evidence 3/3",
+      "class": "architectural",
+      "evidence_type": "static_analysis",
+      "gate_status": "meets_gate",
+      "required_profile": "quick",
+      "transport_source": "none",
+      "blockers": []
+    },
+    {
+      "claim_id": "A2",
+      "status": "validated",
+      "detail": "serialization evidence 3/3",
+      "class": "architectural",
+      "evidence_type": "static_analysis",
+      "gate_status": "meets_gate",
+      "required_profile": "quick",
+      "transport_source": "none",
+      "blockers": []
+    },
+    {
+      "claim_id": "A3",
+      "status": "validated",
+      "detail": "observability evidence 2/2",
+      "class": "architectural",
+      "evidence_type": "integration_test",
+      "gate_status": "meets_gate",
+      "required_profile": "quick",
+      "transport_source": "none",
+      "blockers": []
+    },
+    {
+      "claim_id": "F1",
+      "status": "unsupported_in_scope",
+      "detail": "future/distributed claim outside local single-node validation scope",
+      "class": "future/distributed",
+      "evidence_type": "blocked_future",
+      "gate_status": "not_applicable",
+      "required_profile": "quick",
+      "transport_source": "none",
+      "blockers": [
+        "Requires multi-node distributed implementation."
+      ]
+    },
+    {
+      "claim_id": "F2",
+      "status": "unsupported_in_scope",
+      "detail": "future/distributed claim outside local single-node validation scope",
+      "class": "future/distributed",
+      "evidence_type": "blocked_future",
+      "gate_status": "not_applicable",
+      "required_profile": "quick",
+      "transport_source": "none",
+      "blockers": [
+        "Requires explicit runtime/versioned handler infrastructure."
+      ]
+    },
+    {
+      "claim_id": "F3",
+      "status": "unsupported_in_scope",
+      "detail": "future/distributed claim outside local single-node validation scope",
+      "class": "future/distributed",
+      "evidence_type": "blocked_future",
+      "gate_status": "not_applicable",
+      "required_profile": "quick",
+      "transport_source": "none",
+      "blockers": [
+        "Current protocol is request/response oriented."
+      ]
+    },
+    {
+      "claim_id": "F4",
+      "status": "unsupported_in_scope",
+      "detail": "future/distributed claim outside local single-node validation scope",
+      "class": "future/distributed",
+      "evidence_type": "blocked_future",
+      "gate_status": "not_applicable",
+      "required_profile": "quick",
+      "transport_source": "none",
+      "blockers": [
+        "No WASM execution backend in current repository."
+      ]
+    }
+  ],
+  "coverage_summary": {
+    "by_class": {
+      "empirical": 6,
+      "architectural": 3,
+      "future/distributed": 4
+    },
+    "by_status": {
+      "partially_validated": 3,
+      "validated": 4,
+      "not_validated": 2,
+      "unsupported_in_scope": 4
+    }
+  },
+  "transport_concurrency_profile": {
+    "in_flight_depths": [
+      1,
+      8,
+      32,
+      128
+    ],
+    "duration_seconds": 1.0,
+    "payload_bytes": 512,
+    "pool_size": 4,
+    "max_in_flight_per_conn": 64,
+    "enable_backpressure": true
+  },
+  "backpressure_events": {
+    "pool": 0,
+    "server": 0
+  },
+  "queue_depth_percentiles": {
+    "p50": 1.0,
+    "p95": 1.0,
+    "p99": 1.0
+  },
+  "restart_latency_percentiles": {
+    "p50": 0.0,
+    "p95": 0.0,
+    "p99": 0.0
+  },
+  "raw_artifacts": {
+    "bridge_suite": "docs/benchmarks/raw/whitepaper_validation_20260314T002609/quick_20260313T232610Z/bridge_suite.json",
+    "bridge_stress": "docs/benchmarks/raw/whitepaper_validation_20260314T002609/quick_20260313T232610Z/bridge_stress.json",
+    "memory_scaling": "docs/benchmarks/raw/whitepaper_validation_20260314T002609/quick_20260313T232610Z/memory_scaling.json",
+    "failure_recovery": "docs/benchmarks/raw/whitepaper_validation_20260314T002609/quick_20260313T232610Z/failure_recovery.json",
+    "scheduler_fairness": "docs/benchmarks/raw/whitepaper_validation_20260314T002609/quick_20260313T232610Z/scheduler_fairness.json",
+    "startup_overhead": "docs/benchmarks/raw/whitepaper_validation_20260314T002609/quick_20260313T232610Z/startup_overhead.json",
+    "architectural_evidence": "docs/benchmarks/raw/whitepaper_validation_20260314T002609/quick_20260313T232610Z/architectural_evidence.json"
+  },
+  "suite_summary": {
+    "bridge_suite": {
+      "warmup_runs": 1,
+      "measured_runs": 3,
+      "transport_runs": [
+        {
+          "benchmark": "pyre-bridge-multi-transport",
+          "transport_results": [
+            {
+              "transport": "tcp",
+              "latency": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "samples": 400,
+                  "p50_ms": 0.106708,
+                  "p95_ms": 0.231708,
+                  "p99_ms": 0.300958,
+                  "mean_ms": 0.1282941775,
+                  "min_ms": 0.081917,
+                  "max_ms": 0.346417
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "samples": 400,
+                  "p50_ms": 0.108292,
+                  "p95_ms": 0.200875,
+                  "p99_ms": 0.253917,
+                  "mean_ms": 0.1232839225,
+                  "min_ms": 0.089709,
+                  "max_ms": 0.279875
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "samples": 400,
+                  "p50_ms": 2.758,
+                  "p95_ms": 3.240542,
+                  "p99_ms": 3.515042,
+                  "mean_ms": 2.737419265,
+                  "min_ms": 1.842792,
+                  "max_ms": 3.675833
+                }
+              ],
+              "throughput": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "duration_seconds": 1.0,
+                  "roundtrips": 8827,
+                  "messages_per_second": 8827.0
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "duration_seconds": 1.0,
+                  "roundtrips": 7562,
+                  "messages_per_second": 7562.0
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "duration_seconds": 1.0,
+                  "roundtrips": 356,
+                  "messages_per_second": 356.0
+                }
+              ]
+            },
+            {
+              "transport": "uds",
+              "latency": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "samples": 400,
+                  "p50_ms": 0.064084,
+                  "p95_ms": 0.122542,
+                  "p99_ms": 0.175041,
+                  "mean_ms": 0.0737328175,
+                  "min_ms": 0.060375,
+                  "max_ms": 0.215459
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "samples": 400,
+                  "p50_ms": 0.124459,
+                  "p95_ms": 0.249334,
+                  "p99_ms": 0.303667,
+                  "mean_ms": 0.1436419975,
+                  "min_ms": 0.1155,
+                  "max_ms": 0.319458
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "samples": 400,
+                  "p50_ms": 8.044167,
+                  "p95_ms": 8.388458,
+                  "p99_ms": 8.517958,
+                  "mean_ms": 8.05046283,
+                  "min_ms": 7.492334,
+                  "max_ms": 8.668834
+                }
+              ],
+              "throughput": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "duration_seconds": 1.0,
+                  "roundtrips": 12630,
+                  "messages_per_second": 12630.0
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "duration_seconds": 1.0,
+                  "roundtrips": 6698,
+                  "messages_per_second": 6698.0
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "duration_seconds": 1.0,
+                  "roundtrips": 122,
+                  "messages_per_second": 122.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "benchmark": "pyre-bridge-multi-transport",
+          "transport_results": [
+            {
+              "transport": "tcp",
+              "latency": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "samples": 400,
+                  "p50_ms": 0.116792,
+                  "p95_ms": 0.234667,
+                  "p99_ms": 0.321333,
+                  "mean_ms": 0.1345593725,
+                  "min_ms": 0.076084,
+                  "max_ms": 0.378458
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "samples": 400,
+                  "p50_ms": 0.108167,
+                  "p95_ms": 0.204459,
+                  "p99_ms": 0.255542,
+                  "mean_ms": 0.12488375,
+                  "min_ms": 0.087791,
+                  "max_ms": 0.302083
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "samples": 400,
+                  "p50_ms": 2.741,
+                  "p95_ms": 3.184291,
+                  "p99_ms": 3.456,
+                  "mean_ms": 2.7166702000000003,
+                  "min_ms": 1.905459,
+                  "max_ms": 3.590166
+                }
+              ],
+              "throughput": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "duration_seconds": 1.0,
+                  "roundtrips": 8834,
+                  "messages_per_second": 8834.0
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "duration_seconds": 1.0,
+                  "roundtrips": 7638,
+                  "messages_per_second": 7638.0
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "duration_seconds": 1.0,
+                  "roundtrips": 359,
+                  "messages_per_second": 359.0
+                }
+              ]
+            },
+            {
+              "transport": "uds",
+              "latency": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "samples": 400,
+                  "p50_ms": 0.063042,
+                  "p95_ms": 0.126875,
+                  "p99_ms": 0.167083,
+                  "mean_ms": 0.0727925775,
+                  "min_ms": 0.059667,
+                  "max_ms": 0.188042
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "samples": 400,
+                  "p50_ms": 0.125375,
+                  "p95_ms": 0.228792,
+                  "p99_ms": 0.272208,
+                  "mean_ms": 0.1425307575,
+                  "min_ms": 0.114458,
+                  "max_ms": 0.309542
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "samples": 400,
+                  "p50_ms": 8.040083,
+                  "p95_ms": 8.387541,
+                  "p99_ms": 8.775084,
+                  "mean_ms": 8.0575845675,
+                  "min_ms": 7.523542,
+                  "max_ms": 9.3095
+                }
+              ],
+              "throughput": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "duration_seconds": 1.0,
+                  "roundtrips": 12721,
+                  "messages_per_second": 12721.0
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "duration_seconds": 1.0,
+                  "roundtrips": 6729,
+                  "messages_per_second": 6729.0
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "duration_seconds": 1.0,
+                  "roundtrips": 125,
+                  "messages_per_second": 125.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "benchmark": "pyre-bridge-multi-transport",
+          "transport_results": [
+            {
+              "transport": "tcp",
+              "latency": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "samples": 400,
+                  "p50_ms": 0.104667,
+                  "p95_ms": 0.218958,
+                  "p99_ms": 0.278417,
+                  "mean_ms": 0.1274522125,
+                  "min_ms": 0.075709,
+                  "max_ms": 0.310917
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "samples": 400,
+                  "p50_ms": 0.107375,
+                  "p95_ms": 0.206708,
+                  "p99_ms": 0.257167,
+                  "mean_ms": 0.12459055499999999,
+                  "min_ms": 0.08975,
+                  "max_ms": 0.340875
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "samples": 400,
+                  "p50_ms": 2.725709,
+                  "p95_ms": 3.255083,
+                  "p99_ms": 3.431542,
+                  "mean_ms": 2.74245812,
+                  "min_ms": 1.859,
+                  "max_ms": 3.531416
+                }
+              ],
+              "throughput": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "duration_seconds": 1.0,
+                  "roundtrips": 8902,
+                  "messages_per_second": 8902.0
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "duration_seconds": 1.0,
+                  "roundtrips": 7647,
+                  "messages_per_second": 7647.0
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "duration_seconds": 1.0,
+                  "roundtrips": 369,
+                  "messages_per_second": 369.0
+                }
+              ]
+            },
+            {
+              "transport": "uds",
+              "latency": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "samples": 400,
+                  "p50_ms": 0.064333,
+                  "p95_ms": 0.125416,
+                  "p99_ms": 0.160958,
+                  "mean_ms": 0.0747940275,
+                  "min_ms": 0.060166,
+                  "max_ms": 0.326709
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "samples": 400,
+                  "p50_ms": 0.126583,
+                  "p95_ms": 0.239583,
+                  "p99_ms": 0.302167,
+                  "mean_ms": 0.1465964475,
+                  "min_ms": 0.116291,
+                  "max_ms": 0.331583
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "samples": 400,
+                  "p50_ms": 8.211542,
+                  "p95_ms": 8.588542,
+                  "p99_ms": 9.090291,
+                  "mean_ms": 8.253228457499999,
+                  "min_ms": 7.4015,
+                  "max_ms": 19.822875
+                }
+              ],
+              "throughput": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "duration_seconds": 1.0,
+                  "roundtrips": 12663,
+                  "messages_per_second": 12663.0
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "duration_seconds": 1.0,
+                  "roundtrips": 6678,
+                  "messages_per_second": 6678.0
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "duration_seconds": 1.0,
+                  "roundtrips": 122,
+                  "messages_per_second": 122.0
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "summary": {
+        "tcp": {
+          "small_p50_ms": {
+            "median": 0.106708,
+            "mean": 0.109389,
+            "stddev": 0.00649189702629363,
+            "p95": 0.116792,
+            "p99": 0.116792,
+            "ci95": 0.007346273051536639,
+            "min": 0.104667,
+            "max": 0.116792
+          },
+          "small_p99_ms": {
+            "median": 0.300958,
+            "mean": 0.300236,
+            "stddev": 0.021467108026001058,
+            "p95": 0.321333,
+            "p99": 0.321333,
+            "ci95": 0.024292319571167596,
+            "min": 0.278417,
+            "max": 0.321333
+          },
+          "small_messages_per_second": {
+            "median": 8834.0,
+            "mean": 8854.333333333334,
+            "stddev": 41.428653530296316,
+            "p95": 8902.0,
+            "p99": 8902.0,
+            "ci95": 46.880934765045424,
+            "min": 8827.0,
+            "max": 8902.0
+          }
+        },
+        "uds": {
+          "small_p50_ms": {
+            "median": 0.064084,
+            "mean": 0.06381966666666666,
+            "stddev": 0.000684890015501273,
+            "p95": 0.064333,
+            "p99": 0.064333,
+            "ci95": 0.000775026012237296,
+            "min": 0.063042,
+            "max": 0.064333
+          },
+          "small_p99_ms": {
+            "median": 0.167083,
+            "mean": 0.167694,
+            "stddev": 0.007061353482159074,
+            "p95": 0.175041,
+            "p99": 0.175041,
+            "ci95": 0.00799067369418458,
+            "min": 0.160958,
+            "max": 0.175041
+          },
+          "small_messages_per_second": {
+            "median": 12663.0,
+            "mean": 12671.333333333334,
+            "stddev": 46.068789145508624,
+            "p95": 12721.0,
+            "p99": 12721.0,
+            "ci95": 52.13174251622305,
+            "min": 12630.0,
+            "max": 12721.0
+          }
+        }
+      }
+    },
+    "bridge_stress": {
+      "benchmark": "pyre-bridge-stress",
+      "transport": "uds",
+      "config": {
+        "in_flight_depths": [
+          1,
+          8,
+          32,
+          128
+        ],
+        "duration_seconds": 1.0,
+        "payload_bytes": 512,
+        "pool_size": 4,
+        "max_in_flight_per_conn": 64,
+        "enable_backpressure": true
+      },
+      "results": [
+        {
+          "in_flight_depth": 1,
+          "roundtrips": 9822,
+          "duration_seconds": 1.0,
+          "messages_per_second": 9822.0,
+          "p50_ms": 0.084291,
+          "p95_ms": 0.143334,
+          "p99_ms": 0.20325,
+          "max_in_flight_observed": 0,
+          "pool_backpressure_events": 0,
+          "server_backpressure_events": 0
+        },
+        {
+          "in_flight_depth": 8,
+          "roundtrips": 18552,
+          "duration_seconds": 1.0,
+          "messages_per_second": 18552.0,
+          "p50_ms": 0.391292,
+          "p95_ms": 0.545041,
+          "p99_ms": 0.677083,
+          "max_in_flight_observed": 7,
+          "pool_backpressure_events": 0,
+          "server_backpressure_events": 0
+        },
+        {
+          "in_flight_depth": 32,
+          "roundtrips": 22112,
+          "duration_seconds": 1.0,
+          "messages_per_second": 22112.0,
+          "p50_ms": 1.392709,
+          "p95_ms": 1.790791,
+          "p99_ms": 1.9225,
+          "max_in_flight_observed": 31,
+          "pool_backpressure_events": 0,
+          "server_backpressure_events": 0
+        },
+        {
+          "in_flight_depth": 128,
+          "roundtrips": 23235,
+          "duration_seconds": 1.0,
+          "messages_per_second": 23235.0,
+          "p50_ms": 5.524708,
+          "p95_ms": 6.453458,
+          "p99_ms": 6.675375,
+          "max_in_flight_observed": 127,
+          "pool_backpressure_events": 0,
+          "server_backpressure_events": 0
+        }
+      ],
+      "summary": {
+        "best_messages_per_second": 23235.0,
+        "p99_at_max_depth_ms": 6.675375,
+        "avg_p99_ms": 2.369552
+      }
+    },
+    "memory_scaling": {
+      "python": {
+        "feasible": true,
+        "runs": [
+          {
+            "agents": 100,
+            "rss_bytes": 83591168
+          },
+          {
+            "agents": 1000,
+            "rss_bytes": 84033536
+          }
+        ],
+        "fit": {
+          "bytes_per_agent": 491.52,
+          "base_bytes": 83542016.0
+        },
+        "base_runtime_bytes_estimate": 83812352.0
+      },
+      "elixir_bridge": {
+        "feasible": true,
+        "runs": [
+          {
+            "agents": 100,
+            "baseline_rss_bytes": 98025472,
+            "rss_bytes": 97173504,
+            "delta_bytes": 0
+          },
+          {
+            "agents": 1000,
+            "baseline_rss_bytes": 97550336,
+            "rss_bytes": 98942976,
+            "delta_bytes": 1392640
+          }
+        ],
+        "fit": {
+          "bytes_per_agent": 1547.3777777777777,
+          "base_bytes": -154737.77777777775
+        },
+        "base_runtime_bytes_estimate": 97787904.0
+      }
+    },
+    "failure_recovery": {
+      "restart_attempts": 15,
+      "restarted_successes": 15,
+      "restart_success_ratio": 1.0,
+      "mean_recovery_ms": 33.74794446669208,
+      "strategy_checks": {
+        "rest_for_one_older_survives": true,
+        "rest_for_one_crashed_restarted": true,
+        "rest_for_one_younger_restarted": true
+      }
+    },
+    "scheduler_fairness": {
+      "baseline": {
+        "median": 0.003875,
+        "mean": 0.00461048,
+        "stddev": 0.004562729113062917,
+        "p95": 0.004667,
+        "p99": 0.017667,
+        "ci95": 0.0008942949061603318,
+        "min": 0.003708,
+        "max": 0.046583
+      },
+      "under_cpu_load": {
+        "median": 0.003083,
+        "mean": 0.00354456,
+        "stddev": 0.002641638270834861,
+        "p95": 0.004,
+        "p99": 0.01975,
+        "ci95": 0.0005177611010836327,
+        "min": 0.002916,
+        "max": 0.023666
+      },
+      "python_no_preemption_blocking_factor_p99": 1.1179034357842306,
+      "queue_depth_percentiles": {
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "restart_latency_percentiles_ms": {
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      }
+    },
+    "startup_overhead": {
+      "runs": [
+        {
+          "boot_ms": 453.576375,
+          "first_ping_ms": 5.616167
+        },
+        {
+          "boot_ms": 458.197,
+          "first_ping_ms": 6.177333
+        },
+        {
+          "boot_ms": 458.379917,
+          "first_ping_ms": 6.281375
+        },
+        {
+          "boot_ms": 466.528833,
+          "first_ping_ms": 6.02125
+        }
+      ],
+      "boot_ms": {
+        "median": 458.2884585,
+        "mean": 459.17053125,
+        "stddev": 5.385536889995191,
+        "p95": 466.528833,
+        "p99": 466.528833,
+        "ci95": 5.277826152195288,
+        "min": 453.576375,
+        "max": 466.528833
+      },
+      "first_ping_ms": {
+        "median": 6.0992915,
+        "mean": 6.02403125,
+        "stddev": 0.2921690229968205,
+        "p95": 6.281375,
+        "p99": 6.281375,
+        "ci95": 0.2863256425368841,
+        "min": 5.616167,
+        "max": 6.281375
+      }
+    },
+    "architectural_evidence": {
+      "python_api_surface": {
+        "runtime": true,
+        "agent": true,
+        "readme": true
+      },
+      "state_and_serialization": {
+        "base_model_enforced": true,
+        "bridge_codec_tests": true,
+        "bridge_protocol_tests": true
+      },
+      "observability": {
+        "bridge_health_api": true,
+        "bridge_health_tests": true
+      }
+    }
+  }
+}

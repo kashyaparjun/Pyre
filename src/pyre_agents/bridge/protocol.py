@@ -46,6 +46,9 @@ class BridgeEnvelope(BaseModel):
     message: bytes | None = None
     reply: bytes | None = None
     error: BridgeErrorPayload | None = None
+    queue_depth: int | None = Field(default=None, ge=0)
+    retry_after_ms: int | None = Field(default=None, ge=0)
+    busy_reason: str | None = None
 
     @field_validator("correlation_id")
     @classmethod

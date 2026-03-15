@@ -1,0 +1,453 @@
+{
+  "warmup_runs": 1,
+  "measured_runs": 3,
+  "transport_runs": [
+    {
+      "benchmark": "pyre-bridge-multi-transport",
+      "transport_results": [
+        {
+          "transport": "tcp",
+          "latency": [
+            {
+              "payload_label": "small",
+              "target_payload_bytes": 512,
+              "samples": 400,
+              "p50_ms": 0.095541,
+              "p95_ms": 0.191333,
+              "p99_ms": 0.238375,
+              "mean_ms": 0.1123208,
+              "min_ms": 0.075625,
+              "max_ms": 0.307333
+            },
+            {
+              "payload_label": "medium",
+              "target_payload_bytes": 10240,
+              "samples": 400,
+              "p50_ms": 0.093125,
+              "p95_ms": 0.146917,
+              "p99_ms": 0.234666,
+              "mean_ms": 0.1015275,
+              "min_ms": 0.081709,
+              "max_ms": 0.309875
+            },
+            {
+              "payload_label": "large",
+              "target_payload_bytes": 1048576,
+              "samples": 400,
+              "p50_ms": 1.909459,
+              "p95_ms": 2.485125,
+              "p99_ms": 2.795417,
+              "mean_ms": 1.9578004275,
+              "min_ms": 1.577208,
+              "max_ms": 2.910917
+            }
+          ],
+          "throughput": [
+            {
+              "payload_label": "small",
+              "target_payload_bytes": 512,
+              "duration_seconds": 1.0,
+              "roundtrips": 10476,
+              "messages_per_second": 10476.0
+            },
+            {
+              "payload_label": "medium",
+              "target_payload_bytes": 10240,
+              "duration_seconds": 1.0,
+              "roundtrips": 9349,
+              "messages_per_second": 9349.0
+            },
+            {
+              "payload_label": "large",
+              "target_payload_bytes": 1048576,
+              "duration_seconds": 1.0,
+              "roundtrips": 396,
+              "messages_per_second": 396.0
+            }
+          ]
+        },
+        {
+          "transport": "uds",
+          "latency": [
+            {
+              "payload_label": "small",
+              "target_payload_bytes": 512,
+              "samples": 400,
+              "p50_ms": 0.058583,
+              "p95_ms": 0.096083,
+              "p99_ms": 0.127667,
+              "mean_ms": 0.06346386250000001,
+              "min_ms": 0.056292,
+              "max_ms": 0.195625
+            },
+            {
+              "payload_label": "medium",
+              "target_payload_bytes": 10240,
+              "samples": 400,
+              "p50_ms": 0.113791,
+              "p95_ms": 0.176708,
+              "p99_ms": 0.25225,
+              "mean_ms": 0.1242670825,
+              "min_ms": 0.109958,
+              "max_ms": 0.409042
+            },
+            {
+              "payload_label": "large",
+              "target_payload_bytes": 1048576,
+              "samples": 400,
+              "p50_ms": 7.740625,
+              "p95_ms": 8.134375,
+              "p99_ms": 8.253834,
+              "mean_ms": 7.73454542,
+              "min_ms": 7.076416,
+              "max_ms": 8.9385
+            }
+          ],
+          "throughput": [
+            {
+              "payload_label": "small",
+              "target_payload_bytes": 512,
+              "duration_seconds": 1.0,
+              "roundtrips": 14662,
+              "messages_per_second": 14662.0
+            },
+            {
+              "payload_label": "medium",
+              "target_payload_bytes": 10240,
+              "duration_seconds": 1.0,
+              "roundtrips": 7738,
+              "messages_per_second": 7738.0
+            },
+            {
+              "payload_label": "large",
+              "target_payload_bytes": 1048576,
+              "duration_seconds": 1.0,
+              "roundtrips": 130,
+              "messages_per_second": 130.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "benchmark": "pyre-bridge-multi-transport",
+      "transport_results": [
+        {
+          "transport": "tcp",
+          "latency": [
+            {
+              "payload_label": "small",
+              "target_payload_bytes": 512,
+              "samples": 400,
+              "p50_ms": 0.092375,
+              "p95_ms": 0.1965,
+              "p99_ms": 0.236459,
+              "mean_ms": 0.11267949499999999,
+              "min_ms": 0.07425,
+              "max_ms": 0.311625
+            },
+            {
+              "payload_label": "medium",
+              "target_payload_bytes": 10240,
+              "samples": 400,
+              "p50_ms": 0.092875,
+              "p95_ms": 0.13875,
+              "p99_ms": 0.18375,
+              "mean_ms": 0.1002868725,
+              "min_ms": 0.081542,
+              "max_ms": 0.318709
+            },
+            {
+              "payload_label": "large",
+              "target_payload_bytes": 1048576,
+              "samples": 400,
+              "p50_ms": 1.874125,
+              "p95_ms": 2.412792,
+              "p99_ms": 2.637541,
+              "mean_ms": 1.943595825,
+              "min_ms": 1.584417,
+              "max_ms": 2.965833
+            }
+          ],
+          "throughput": [
+            {
+              "payload_label": "small",
+              "target_payload_bytes": 512,
+              "duration_seconds": 1.0,
+              "roundtrips": 10260,
+              "messages_per_second": 10260.0
+            },
+            {
+              "payload_label": "medium",
+              "target_payload_bytes": 10240,
+              "duration_seconds": 1.0,
+              "roundtrips": 9366,
+              "messages_per_second": 9366.0
+            },
+            {
+              "payload_label": "large",
+              "target_payload_bytes": 1048576,
+              "duration_seconds": 1.0,
+              "roundtrips": 401,
+              "messages_per_second": 401.0
+            }
+          ]
+        },
+        {
+          "transport": "uds",
+          "latency": [
+            {
+              "payload_label": "small",
+              "target_payload_bytes": 512,
+              "samples": 400,
+              "p50_ms": 0.057208,
+              "p95_ms": 0.102083,
+              "p99_ms": 0.1405,
+              "mean_ms": 0.0643687475,
+              "min_ms": 0.05625,
+              "max_ms": 0.192583
+            },
+            {
+              "payload_label": "medium",
+              "target_payload_bytes": 10240,
+              "samples": 400,
+              "p50_ms": 0.1125,
+              "p95_ms": 0.175667,
+              "p99_ms": 0.262125,
+              "mean_ms": 0.122448325,
+              "min_ms": 0.110084,
+              "max_ms": 0.288917
+            },
+            {
+              "payload_label": "large",
+              "target_payload_bytes": 1048576,
+              "samples": 400,
+              "p50_ms": 7.74475,
+              "p95_ms": 8.121833,
+              "p99_ms": 8.207375,
+              "mean_ms": 7.74699925,
+              "min_ms": 7.096166,
+              "max_ms": 8.362542
+            }
+          ],
+          "throughput": [
+            {
+              "payload_label": "small",
+              "target_payload_bytes": 512,
+              "duration_seconds": 1.0,
+              "roundtrips": 14622,
+              "messages_per_second": 14622.0
+            },
+            {
+              "payload_label": "medium",
+              "target_payload_bytes": 10240,
+              "duration_seconds": 1.0,
+              "roundtrips": 7705,
+              "messages_per_second": 7705.0
+            },
+            {
+              "payload_label": "large",
+              "target_payload_bytes": 1048576,
+              "duration_seconds": 1.0,
+              "roundtrips": 128,
+              "messages_per_second": 128.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "benchmark": "pyre-bridge-multi-transport",
+      "transport_results": [
+        {
+          "transport": "tcp",
+          "latency": [
+            {
+              "payload_label": "small",
+              "target_payload_bytes": 512,
+              "samples": 400,
+              "p50_ms": 0.09725,
+              "p95_ms": 0.198,
+              "p99_ms": 0.253042,
+              "mean_ms": 0.11441030749999999,
+              "min_ms": 0.072583,
+              "max_ms": 0.339333
+            },
+            {
+              "payload_label": "medium",
+              "target_payload_bytes": 10240,
+              "samples": 400,
+              "p50_ms": 0.0925,
+              "p95_ms": 0.145458,
+              "p99_ms": 0.212959,
+              "mean_ms": 0.101051065,
+              "min_ms": 0.08225,
+              "max_ms": 0.348583
+            },
+            {
+              "payload_label": "large",
+              "target_payload_bytes": 1048576,
+              "samples": 400,
+              "p50_ms": 1.944334,
+              "p95_ms": 2.643333,
+              "p99_ms": 2.822916,
+              "mean_ms": 2.0045802925,
+              "min_ms": 1.593709,
+              "max_ms": 3.002042
+            }
+          ],
+          "throughput": [
+            {
+              "payload_label": "small",
+              "target_payload_bytes": 512,
+              "duration_seconds": 1.0,
+              "roundtrips": 10474,
+              "messages_per_second": 10474.0
+            },
+            {
+              "payload_label": "medium",
+              "target_payload_bytes": 10240,
+              "duration_seconds": 1.0,
+              "roundtrips": 9355,
+              "messages_per_second": 9355.0
+            },
+            {
+              "payload_label": "large",
+              "target_payload_bytes": 1048576,
+              "duration_seconds": 1.0,
+              "roundtrips": 400,
+              "messages_per_second": 400.0
+            }
+          ]
+        },
+        {
+          "transport": "uds",
+          "latency": [
+            {
+              "payload_label": "small",
+              "target_payload_bytes": 512,
+              "samples": 400,
+              "p50_ms": 0.05875,
+              "p95_ms": 0.097,
+              "p99_ms": 0.128,
+              "mean_ms": 0.06302925250000001,
+              "min_ms": 0.056459,
+              "max_ms": 0.171291
+            },
+            {
+              "payload_label": "medium",
+              "target_payload_bytes": 10240,
+              "samples": 400,
+              "p50_ms": 0.1155,
+              "p95_ms": 0.171083,
+              "p99_ms": 0.25825,
+              "mean_ms": 0.1239894825,
+              "min_ms": 0.110625,
+              "max_ms": 0.397709
+            },
+            {
+              "payload_label": "large",
+              "target_payload_bytes": 1048576,
+              "samples": 400,
+              "p50_ms": 7.7545,
+              "p95_ms": 8.156375,
+              "p99_ms": 8.316416,
+              "mean_ms": 7.759414115,
+              "min_ms": 7.201083,
+              "max_ms": 8.637542
+            }
+          ],
+          "throughput": [
+            {
+              "payload_label": "small",
+              "target_payload_bytes": 512,
+              "duration_seconds": 1.0,
+              "roundtrips": 14634,
+              "messages_per_second": 14634.0
+            },
+            {
+              "payload_label": "medium",
+              "target_payload_bytes": 10240,
+              "duration_seconds": 1.0,
+              "roundtrips": 7699,
+              "messages_per_second": 7699.0
+            },
+            {
+              "payload_label": "large",
+              "target_payload_bytes": 1048576,
+              "duration_seconds": 1.0,
+              "roundtrips": 129,
+              "messages_per_second": 129.0
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "tcp": {
+      "small_p50_ms": {
+        "median": 0.095541,
+        "mean": 0.09505533333333334,
+        "stddev": 0.0024735218481617147,
+        "p95": 0.09725,
+        "p99": 0.09725,
+        "ci95": 0.00279905346956987,
+        "min": 0.092375,
+        "max": 0.09725
+      },
+      "small_p99_ms": {
+        "median": 0.238375,
+        "mean": 0.24262533333333333,
+        "stddev": 0.009071822988425932,
+        "p95": 0.253042,
+        "p99": 0.253042,
+        "ci95": 0.010265734111040361,
+        "min": 0.236459,
+        "max": 0.253042
+      },
+      "small_messages_per_second": {
+        "median": 10474.0,
+        "mean": 10403.333333333334,
+        "stddev": 124.13433583555089,
+        "p95": 10476.0,
+        "p99": 10476.0,
+        "ci95": 140.4712247322482,
+        "min": 10260.0,
+        "max": 10476.0
+      }
+    },
+    "uds": {
+      "small_p50_ms": {
+        "median": 0.058583,
+        "mean": 0.058180333333333334,
+        "stddev": 0.0008461952099446858,
+        "p95": 0.05875,
+        "p99": 0.05875,
+        "ci95": 0.000957560023207131,
+        "min": 0.057208,
+        "max": 0.05875
+      },
+      "small_p99_ms": {
+        "median": 0.128,
+        "mean": 0.13205566666666668,
+        "stddev": 0.007314902346124207,
+        "p95": 0.1405,
+        "p99": 0.1405,
+        "ci95": 0.008277591243716048,
+        "min": 0.127667,
+        "max": 0.1405
+      },
+      "small_messages_per_second": {
+        "median": 14634.0,
+        "mean": 14639.333333333334,
+        "stddev": 20.526405757787536,
+        "p95": 14662.0,
+        "p99": 14662.0,
+        "ci95": 23.227814743918074,
+        "min": 14622.0,
+        "max": 14662.0
+      }
+    }
+  }
+}

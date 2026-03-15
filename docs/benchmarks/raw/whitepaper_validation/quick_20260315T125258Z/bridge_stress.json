@@ -1,0 +1,85 @@
+{
+  "benchmark": "elixir-bridge-stress",
+  "transport": "uds",
+  "config": {
+    "in_flight_depths": [
+      1,
+      8,
+      32,
+      128,
+      512
+    ],
+    "duration_seconds": 1.0,
+    "payload_bytes": 512,
+    "pool_size": 8,
+    "max_in_flight_per_conn": 64,
+    "enable_backpressure": true
+  },
+  "results": [
+    {
+      "in_flight_depth": 1,
+      "messages_per_second": 10290.0,
+      "p99_ms": 0.200833,
+      "p50_ms": 0.07939550000000001,
+      "p95_ms": 0.127334,
+      "pool_backpressure_events": 0,
+      "server_backpressure_events": 0,
+      "roundtrips": 10290,
+      "duration_seconds": 1.0,
+      "max_in_flight_observed": 1
+    },
+    {
+      "in_flight_depth": 8,
+      "messages_per_second": 33144.0,
+      "p99_ms": 0.458709,
+      "p50_ms": 0.2126455,
+      "p95_ms": 0.386208,
+      "pool_backpressure_events": 0,
+      "server_backpressure_events": 0,
+      "roundtrips": 33144,
+      "duration_seconds": 1.0,
+      "max_in_flight_observed": 8
+    },
+    {
+      "in_flight_depth": 32,
+      "messages_per_second": 39665.0,
+      "p99_ms": 1.230166,
+      "p50_ms": 0.7339375,
+      "p95_ms": 1.12175,
+      "pool_backpressure_events": 0,
+      "server_backpressure_events": 0,
+      "roundtrips": 39665,
+      "duration_seconds": 1.0,
+      "max_in_flight_observed": 32
+    },
+    {
+      "in_flight_depth": 128,
+      "messages_per_second": 39544.0,
+      "p99_ms": 1.650083,
+      "p50_ms": 1.1520005,
+      "p95_ms": 1.633167,
+      "pool_backpressure_events": 0,
+      "server_backpressure_events": 0,
+      "roundtrips": 39544,
+      "duration_seconds": 1.0,
+      "max_in_flight_observed": 128
+    },
+    {
+      "in_flight_depth": 512,
+      "messages_per_second": 37677.0,
+      "p99_ms": 2.082875,
+      "p50_ms": 1.5697705000000002,
+      "p95_ms": 2.068958,
+      "pool_backpressure_events": 0,
+      "server_backpressure_events": 0,
+      "roundtrips": 37677,
+      "duration_seconds": 1.0,
+      "max_in_flight_observed": 512
+    }
+  ],
+  "summary": {
+    "best_messages_per_second": 39665.0,
+    "p99_at_max_depth_ms": 2.082875,
+    "avg_p99_ms": 1.1245332
+  }
+}

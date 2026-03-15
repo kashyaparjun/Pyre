@@ -12,7 +12,10 @@ defmodule PyreBridge.Codec do
     "state",
     "message",
     "reply",
-    "error"
+    "error",
+    "queue_depth",
+    "retry_after_ms",
+    "busy_reason"
   ]
 
   @spec pack_payload(term()) :: {:ok, binary()} | {:error, term()}
@@ -84,13 +87,15 @@ defmodule PyreBridge.Codec do
 
   defp normalize_term(%{} = map) do
     Enum.reduce(map, %{}, fn {key, value}, acc ->
-      case normalize_key(key) do
-        nil -> acc
-        normalized_key -> Map.put(acc, normalized_key, normalize_term(value))
-      end
+      Map.put(acc, normalize_nested_key(key), normalize_term(value))
     end)
   end
 
   defp normalize_term(list) when is_list(list), do: Enum.map(list, &normalize_term/1)
   defp normalize_term(other), do: other
+
+  defp normalize_nested_key(%Msgpax.Bin{data: data}) when is_binary(data), do: data
+  defp normalize_nested_key(key) when is_binary(key), do: key
+  defp normalize_nested_key(key) when is_atom(key), do: Atom.to_string(key)
+  defp normalize_nested_key(other), do: other
 end

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import asyncio
+import tempfile
+from pathlib import Path
 from uuid import uuid4
 
 import pytest
@@ -181,3 +183,26 @@ async def test_server_emits_connection_error_health_event() -> None:
 
     assert observed_errors
     assert any("BridgeCodecError" in value for value in observed_errors)
+
+
+@pytest.mark.asyncio
+async def test_bridge_transport_unix_socket_roundtrip() -> None:
+    async def handler(envelope: BridgeEnvelope) -> BridgeEnvelope:
+        return BridgeEnvelope(correlation_id=envelope.correlation_id, type=MessageType.PONG)
+
+    server = BridgeServer(handler)
+    with tempfile.TemporaryDirectory(prefix="pyre-bridge-test-") as tmp_dir:
+        socket_path = Path(tmp_dir) / "bridge.sock"
+        await server.start_unix(str(socket_path))
+        transport = await BridgeTransport.connect_unix(str(socket_path))
+        try:
+            correlation_id = str(uuid4())
+            await transport.send_envelope(
+                BridgeEnvelope(correlation_id=correlation_id, type=MessageType.PING)
+            )
+            response = await transport.recv_envelope()
+            assert response.type is MessageType.PONG
+            assert response.correlation_id == correlation_id
+        finally:
+            await transport.close()
+            await server.close()

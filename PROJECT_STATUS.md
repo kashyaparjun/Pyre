@@ -1,19 +1,19 @@
 # PROJECT_STATUS
 
-Last updated: 2026-03-12
+Last updated: 2026-03-13
 
 ## Current status
 
-- Overall phase: Phase 3 (Supervision Trees)
+- Overall phase: Phase 4 (Packaging + release workflow)
 - State: Complete
-- Immediate goal: Start Phase 4 implementation (packaging + release workflow)
+- Immediate goal: Start Phase 5 implementation (advanced features)
 
 ## Milestones (from project plan)
 
 1. Phase 1 - Bridge Protocol (Weeks 1-3): Complete
 2. Phase 2 - Agent Lifecycle (Weeks 4-6): Complete
 3. Phase 3 - Supervision Trees (Weeks 7-8): Complete
-4. Phase 4 - Packaging (Weeks 9-10): Not started
+4. Phase 4 - Packaging (Weeks 9-10): Complete
 5. Phase 5 - Advanced Features (Weeks 11-14): Not started
 6. Phase 6 - Docs and Launch (Weeks 15-16): Not started
 
@@ -267,18 +267,25 @@ Last updated: 2026-03-12
 
 ### Phase 4 acceptance checklist
 
-1. Python package metadata finalized: TODO
-2. Wheel/sdist build reproducibility verified: TODO
-3. Clean-environment install smoke test passing: TODO
-4. Unified release gate checks for Python + Elixir passing: TODO
-5. Packaging and compatibility docs published: TODO
+1. Python package metadata finalized: PASS
+   - `pyproject.toml` now includes keywords, classifiers, and explicit wheel packaging.
+   - `mix.exs` now includes package metadata and release-facing description.
+2. Wheel/sdist build reproducibility verified: PASS
+   - `uv build` produces `dist/pyre_agents-0.1.0.tar.gz` and `dist/pyre_agents-0.1.0-py3-none-any.whl`.
+3. Clean-environment install smoke test passing: PASS
+   - `scripts/package_smoke.py` installs the wheel into a fresh virtual environment and verifies CLI/runtime behavior.
+4. Unified release gate checks for Python + Elixir passing: PASS
+   - `scripts/release_gate.py` runs Ruff, MyPy, Python tests, Elixir tests, build, and package smoke checks.
+   - `.github/workflows/ci.yml` runs the same gate in CI.
+5. Packaging and compatibility docs published: PASS
+   - `README.md`, `elixir/pyre_bridge/README.md`, and `docs/packaging/phase4.md` now document installation, compatibility, and release flow.
 
-### Next actions (Phase 4 kickoff)
+### Next actions (Phase 5 kickoff)
 
-1. Audit and finalize `pyproject.toml` publish metadata and entry points.
-2. Add packaging smoke command(s) for wheel install/import/CLI verification.
-3. Define a single release-gate command sequence for Python + Elixir checks.
-4. Draft `docs/packaging/phase4.md` with install, compatibility, and release checklist details.
+1. Expand bridge transport beyond the current TCP loopback baseline toward the production transport target.
+2. Add richer agent behaviors and non-counter bridge handlers to move beyond the current validation harness.
+3. Define API stability boundaries for external users before a public release.
+4. Broaden docs from build/release guidance into end-user guides and architecture walkthroughs.
 
 ## Risks to watch
 

@@ -5,10 +5,12 @@ defmodule PyreBridge.MixProject do
     [
       app: :pyre_bridge,
       version: "0.1.0",
+      description: "Elixir bridge runtime for the Pyre Python agent framework.",
       elixir: "~> 1.16",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      package: package()
     ]
   end
 
@@ -22,6 +24,13 @@ defmodule PyreBridge.MixProject do
   defp deps do
     [
       {:msgpax, "~> 2.4"}
+    ]
+  end
+
+  defp package do
+    [
+      files: ~w(lib config mix.exs README.md),
+      licenses: ["MIT"]
     ]
   end
 
