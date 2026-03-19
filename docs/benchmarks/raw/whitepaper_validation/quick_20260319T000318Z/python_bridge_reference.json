@@ -1,0 +1,66 @@
+{
+  "benchmark": "pyre-bridge-multi-transport",
+  "transport_results": [
+    {
+      "transport": "tcp",
+      "latency": [
+        {
+          "payload_label": "small",
+          "target_payload_bytes": 512,
+          "samples": 400,
+          "p50_ms": 0.113709,
+          "p95_ms": 0.210375,
+          "p99_ms": 0.256542,
+          "mean_ms": 0.13119345000000002,
+          "min_ms": 0.07975,
+          "max_ms": 0.285083
+        },
+        {
+          "payload_label": "medium",
+          "target_payload_bytes": 10240,
+          "samples": 400,
+          "p50_ms": 0.101958,
+          "p95_ms": 0.161708,
+          "p99_ms": 0.202833,
+          "mean_ms": 0.10948428,
+          "min_ms": 0.083958,
+          "max_ms": 0.238042
+        },
+        {
+          "payload_label": "large",
+          "target_payload_bytes": 1048576,
+          "samples": 400,
+          "p50_ms": 2.363458,
+          "p95_ms": 2.8265,
+          "p99_ms": 3.058375,
+          "mean_ms": 2.3849817774999997,
+          "min_ms": 1.853542,
+          "max_ms": 3.2485
+        }
+      ],
+      "throughput": [
+        {
+          "payload_label": "small",
+          "target_payload_bytes": 512,
+          "duration_seconds": 1.0,
+          "roundtrips": 9820,
+          "messages_per_second": 9820.0
+        },
+        {
+          "payload_label": "medium",
+          "target_payload_bytes": 10240,
+          "duration_seconds": 1.0,
+          "roundtrips": 8457,
+          "messages_per_second": 8457.0
+        },
+        {
+          "payload_label": "large",
+          "target_payload_bytes": 1048576,
+          "duration_seconds": 1.0,
+          "roundtrips": 390,
+          "messages_per_second": 390.0
+        }
+      ]
+    }
+  ]
+}

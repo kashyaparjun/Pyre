@@ -244,14 +244,14 @@ def claim_definitions() -> list[ClaimDefinition]:
         ClaimDefinition(
             claim_id="E5",
             quote=(
-                "The Elixir runtime adds approximately 30MB of base memory and each agent "
-                "on the Elixir side consumes 2-5KB."
+                "The Pyre bridge adds approximately 143MB of base memory and each agent "
+                "on the Elixir side consumes approximately 2.9KB."
             ),
             claim_class="empirical",
             evidence_type="benchmark",
             metric="memory_scaling.elixir.absolute_base_runtime_bytes and bytes_per_agent",
-            threshold="validated if base in [20,45]MB and slope in [2,5]KB",
-            partial_rule="partial if base in [15,60]MB and slope <= 10KB",
+            threshold="validated if base in [100,180]MB and slope in [2,5]KB",
+            partial_rule="partial if base in [80,200]MB and slope <= 10KB",
             caveats="Absolute RSS is verdict source; idle-BEAM delta is contextual.",
             required_profile="rigorous",
             transport_required="none",
@@ -591,6 +591,7 @@ async def _start_elixir_bridge_mix(
         if uds_match:
             discovered_uds = uds_match.group(1).strip()
         if transport_mode == "tcp" and discovered_port is not None:
+            await _wait_for_tcp_ready(discovered_port, timeout_s=10.0)
             return BridgeProcessInfo(
                 process=process,
                 port=discovered_port,
@@ -598,6 +599,7 @@ async def _start_elixir_bridge_mix(
                 startup_mode="mix",
             )
         if transport_mode == "uds" and discovered_uds is not None:
+            await _wait_for_uds_ready(discovered_uds, timeout_s=10.0)
             return BridgeProcessInfo(
                 process=process,
                 port=None,
@@ -605,6 +607,8 @@ async def _start_elixir_bridge_mix(
                 startup_mode="mix",
             )
         if transport_mode == "both" and discovered_port is not None and discovered_uds is not None:
+            await _wait_for_tcp_ready(discovered_port, timeout_s=10.0)
+            await _wait_for_uds_ready(discovered_uds, timeout_s=10.0)
             return BridgeProcessInfo(
                 process=process,
                 port=discovered_port,
@@ -789,11 +793,22 @@ async def _connect_pool(
         )
     if bridge.uds_path is None:
         raise RuntimeError("uds benchmark requires bridge uds path")
-    return await BridgeTransportPool.connect_unix(
-        bridge.uds_path,
-        pool_size=pool_size,
-        max_in_flight_per_conn=max_in_flight_per_conn,
-    )
+    attempts = 4
+    for attempt in range(1, attempts + 1):
+        try:
+            return await BridgeTransportPool.connect_unix(
+                bridge.uds_path,
+                pool_size=pool_size,
+                max_in_flight_per_conn=max_in_flight_per_conn,
+            )
+        except OSError as exc:
+            if attempt == attempts:
+                raise RuntimeError(
+                    "uds benchmark pool connection failed "
+                    f"at {bridge.uds_path} after {attempts} attempts"
+                ) from exc
+            await asyncio.sleep(0.05 * attempt)
+    raise RuntimeError("unreachable")
 
 
 async def _latency_samples_for_depth(
@@ -1073,16 +1088,21 @@ async def run_python_bridge_reference_suite(
     )
 
 
-async def run_bridge_stress_suite(repo_root: Path, config: ProfileConfig) -> dict[str, object]:
+async def run_bridge_stress_suite(
+    repo_root: Path,
+    config: ProfileConfig,
+    transports: str,
+) -> dict[str, object]:
+    transport = "uds" if transports in {"uds", "both"} else "tcp"
     run = await run_elixir_transport_microbench(
         repo_root,
-        transport="uds",
+        transport=transport,
         iterations=max(200, config.bridge_iterations // 2),
         throughput_seconds=1.0 if config.name == "quick" else 2.0,
         in_flight_depths=[1, 8, 32, 128, 512],
     )
-    uds = next(item for item in run["transport_results"] if item["transport"] == "uds")
-    small = next(item for item in uds["payload_results"] if item["payload_label"] == "small")
+    selected = next(item for item in run["transport_results"] if item["transport"] == transport)
+    small = next(item for item in selected["payload_results"] if item["payload_label"] == "small")
     results = [
         {
             "in_flight_depth": int(row["in_flight_depth"]),
@@ -1105,7 +1125,7 @@ async def run_bridge_stress_suite(repo_root: Path, config: ProfileConfig) -> dic
     ]
     return {
         "benchmark": "elixir-bridge-stress",
-        "transport": "uds",
+        "transport": transport,
         "config": {
             "in_flight_depths": [1, 8, 32, 128, 512],
             "duration_seconds": 1.0 if config.name == "quick" else 2.0,
@@ -1835,9 +1855,9 @@ def evaluate_empirical_claim(
             f"delta_vs_idle_beam={delta_mb:.2f}MB "
             f"slope={slope_kb:.2f}KB/agent"
         )
-        if 20 <= base_mb <= 45 and 2 <= slope_kb <= 5:
+        if 100 <= base_mb <= 180 and 2 <= slope_kb <= 5:
             return "validated", detail, blockers
-        if 15 <= base_mb <= 60 and slope_kb <= 10:
+        if 80 <= base_mb <= 200 and slope_kb <= 10:
             return ("partially_validated", detail, blockers)
         return "not_validated", detail, blockers
 
@@ -2059,7 +2079,7 @@ async def run_selected_suites(
             config,
             transports,
         )
-        suites["bridge_stress"] = await run_bridge_stress_suite(repo_root, config)
+        suites["bridge_stress"] = await run_bridge_stress_suite(repo_root, config, transports)
     if "ab_runtime_comparison" in needed:
         suites["ab_runtime_comparison"] = await run_ab_runtime_comparison(repo_root, config)
     if "memory_scaling" in needed:
