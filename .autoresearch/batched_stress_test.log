@@ -1,0 +1,12 @@
+Task was destroyed but it is pending!
+task: <Task pending name='Task-4' coro=<BridgeMultiplexedConnection._recv_loop() done, defined at /Users/arjun/Documents/Pyre/src/pyre_agents/bridge/transport.py:136> wait_for=<Future pending cb=[Task.task_wakeup()]>>
+Task was destroyed but it is pending!
+task: <Task pending name='Task-5' coro=<BridgeMultiplexedConnection._recv_loop() done, defined at /Users/arjun/Documents/Pyre/src/pyre_agents/bridge/transport.py:136> wait_for=<Future pending cb=[Task.task_wakeup()]>>
+Task was destroyed but it is pending!
+task: <Task pending name='Task-6' coro=<BridgeMultiplexedConnection._recv_loop() done, defined at /Users/arjun/Documents/Pyre/src/pyre_agents/bridge/transport.py:136> wait_for=<Future pending cb=[Task.task_wakeup()]>>
+Task was destroyed but it is pending!
+task: <Task pending name='Task-7' coro=<BridgeMultiplexedConnection._recv_loop() done, defined at /Users/arjun/Documents/Pyre/src/pyre_agents/bridge/transport.py:136> wait_for=<Future pending cb=[Task.task_wakeup()]>>
+Task was destroyed but it is pending!
+task: <Task pending name='Task-8' coro=<BridgeMultiplexedConnection._recv_loop() done, defined at /Users/arjun/Documents/Pyre/src/pyre_agents/bridge/transport.py:136> wait_for=<Future pending cb=[Task.task_wakeup()]>>
+Task was destroyed but it is pending!
+task: <Task pending name='Task-9' coro=<BridgeMultiplexedConnection._recv_loop() done, defined at /Users/arjun/Documents/Pyre/src/pyre_agents/bridge/transport.py:136> wait_for=<Future pending cb=[Task.task_wakeup()]>>
