@@ -1,0 +1,100 @@
+          "under_cpu_load": {
+            "median": 0.0030204999999999997,
+            "mean": 0.0031950200000000002,
+            "stddev": 0.0012135840814827305,
+            "p95": 0.003375,
+            "p99": 0.004125,
+            "ci95": 0.00023786247997061515,
+            "min": 0.002916,
+            "max": 0.015083
+          },
+          "blocking_factor_p99": 0.9519963074082622,
+          "queue_depth_percentiles": {
+            "p50": 1.0,
+            "p95": 1.0,
+            "p99": 1.0
+          },
+          "restart_latency_percentiles_ms": {
+            "p50": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      },
+      "queue_depth_percentiles": {
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "restart_latency_percentiles_ms": {
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      }
+    },
+    "startup_overhead": {
+      "runs": [
+        {
+          "boot_ms": 680.161667,
+          "first_ping_ms": 0.394666
+        },
+        {
+          "boot_ms": 663.593,
+          "first_ping_ms": 0.375292
+        },
+        {
+          "boot_ms": 610.526,
+          "first_ping_ms": 0.363209
+        },
+        {
+          "boot_ms": 664.854917,
+          "first_ping_ms": 0.359042
+        },
+        {
+          "boot_ms": 607.119541,
+          "first_ping_ms": 0.356125
+        },
+        {
+          "boot_ms": 714.378292,
+          "first_ping_ms": 0.42675
+        }
+      ],
+      "boot_ms": {
+        "median": 664.2239585,
+        "mean": 656.7722361666666,
+        "stddev": 41.428203410239924,
+        "p95": 714.378292,
+        "p99": 714.378292,
+        "ci95": 33.14946670967047,
+        "min": 607.119541,
+        "max": 714.378292
+      },
+      "first_ping_ms": {
+        "median": 0.36925050000000004,
+        "mean": 0.37918066666666667,
+        "stddev": 0.02723961287292217,
+        "p95": 0.42675,
+        "p99": 0.42675,
+        "ci95": 0.021796229761005106,
+        "min": 0.356125,
+        "max": 0.42675
+      }
+    },
+    "architectural_evidence": {
+      "python_api_surface": {
+        "runtime": true,
+        "agent": true,
+        "readme": true
+      },
+      "state_and_serialization": {
+        "base_model_enforced": true,
+        "bridge_codec_tests": true,
+        "bridge_protocol_tests": true
+      },
+      "observability": {
+        "bridge_health_api": true,
+        "bridge_health_tests": true
+      }
+    }
+  }
+}
