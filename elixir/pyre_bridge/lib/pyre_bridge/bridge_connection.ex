@@ -66,25 +66,40 @@ defmodule PyreBridge.BridgeConnection do
         send_busy_response(state, envelope, queue_depth, "in_flight_limit")
 
       true ->
-        case Task.Supervisor.start_child(PyreBridge.BridgeExecutionSupervisor, fn ->
-               try do
-                 response_envelope = execute_envelope(envelope, state.handler)
-                 send(state.writer_pid, {:write, response_envelope})
-               after
-                 BridgeMetrics.release_in_flight()
-               end
-             end) do
-          {:ok, _pid} ->
+        # Optimized: Handle ping messages inline without spawning a task
+        case envelope do
+          %{type: "ping", correlation_id: correlation_id} ->
+            send(state.writer_pid, {:write, %{correlation_id: correlation_id, type: "pong"}})
+            BridgeMetrics.release_in_flight()
             state
 
-          {:error, :max_children} ->
-            BridgeMetrics.release_in_flight()
-            send_busy_response(state, envelope, queue_depth, "execution_pool_limit")
+          _ ->
+            # Other messages still spawn a task for isolation
+            case Task.Supervisor.start_child(PyreBridge.BridgeExecutionSupervisor, fn ->
+                   try do
+                     response_envelope = execute_envelope(envelope, state.handler)
+                     send(state.writer_pid, {:write, response_envelope})
+                   after
+                     BridgeMetrics.release_in_flight()
+                   end
+                 end) do
+              {:ok, _pid} ->
+                state
 
-          {:error, reason} ->
-            BridgeMetrics.release_in_flight()
-            send(state.writer_pid, {:write, error_response(envelope.correlation_id, envelope.agent_id, reason)})
-            state
+              {:error, :max_children} ->
+                BridgeMetrics.release_in_flight()
+                send_busy_response(state, envelope, queue_depth, "execution_pool_limit")
+
+              {:error, reason} ->
+                BridgeMetrics.release_in_flight()
+
+                send(
+                  state.writer_pid,
+                  {:write, error_response(envelope.correlation_id, envelope.agent_id, reason)}
+                )
+
+                state
+            end
         end
     end
   end
@@ -340,14 +355,17 @@ defmodule PyreBridge.BridgeConnection do
     %{initial: Map.get(opts, "initial", 0)}
   end
 
-  defp maybe_put_parent(opts, parent) when is_binary(parent), do: Keyword.put(opts, :parent, parent)
+  defp maybe_put_parent(opts, parent) when is_binary(parent),
+    do: Keyword.put(opts, :parent, parent)
+
   defp maybe_put_parent(opts, _parent), do: opts
 
   defp maybe_put_group(opts, group) when is_binary(group), do: Keyword.put(opts, :group, group)
   defp maybe_put_group(opts, _group), do: opts
 
-  defp maybe_put_max_restarts(opts, max_restarts) when is_integer(max_restarts) and max_restarts > 0,
-    do: Keyword.put(opts, :max_restarts, max_restarts)
+  defp maybe_put_max_restarts(opts, max_restarts)
+       when is_integer(max_restarts) and max_restarts > 0,
+       do: Keyword.put(opts, :max_restarts, max_restarts)
 
   defp maybe_put_max_restarts(opts, _max_restarts), do: opts
 
