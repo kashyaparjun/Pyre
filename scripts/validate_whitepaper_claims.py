@@ -943,7 +943,7 @@ async def run_elixir_transport_microbench(
                 mode,
                 bridge,
                 pool_size=8,
-                max_in_flight_per_conn=64,
+                max_in_flight_per_conn=256,
             )
             try:
                 payload_results: list[dict[str, object]] = []
