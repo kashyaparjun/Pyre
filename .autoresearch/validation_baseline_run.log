@@ -1,0 +1,50 @@
+Traceback (most recent call last):
+  File "/Users/arjun/Documents/Pyre/scripts/validate_whitepaper_claims.py", line 2303, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/Users/arjun/Documents/Pyre/scripts/validate_whitepaper_claims.py", line 2299, in main
+    return asyncio.run(main_async(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arjun/.local/share/uv/python/cpython-3.12.7-macos-aarch64-none/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/arjun/.local/share/uv/python/cpython-3.12.7-macos-aarch64-none/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arjun/.local/share/uv/python/cpython-3.12.7-macos-aarch64-none/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/Users/arjun/Documents/Pyre/scripts/validate_whitepaper_claims.py", line 2129, in main_async
+    suites = await run_selected_suites(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arjun/Documents/Pyre/scripts/validate_whitepaper_claims.py", line 2094, in run_selected_suites
+    suites["bridge_suite"] = await run_bridge_suite(repo_root, config, transports)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arjun/Documents/Pyre/scripts/validate_whitepaper_claims.py", line 1057, in run_bridge_suite
+    _ = await once()
+        ^^^^^^^^^^^^
+  File "/Users/arjun/Documents/Pyre/scripts/validate_whitepaper_claims.py", line 1048, in once
+    return await run_elixir_transport_microbench(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arjun/Documents/Pyre/scripts/validate_whitepaper_claims.py", line 933, in run_elixir_transport_microbench
+    bridge = await start_elixir_bridge(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arjun/Documents/Pyre/scripts/validate_whitepaper_claims.py", line 699, in start_elixir_bridge
+    return await _start_elixir_bridge_mix(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arjun/Documents/Pyre/scripts/validate_whitepaper_claims.py", line 640, in _start_elixir_bridge_mix
+    raise RuntimeError(f"failed to discover bridge endpoints from mix output:
+{reason}")
+RuntimeError: failed to discover bridge endpoints from mix output:
+Compiling 2 files (.ex)
+error: cannot define module PyreBridge.BridgeConnection because it is currently being defined in lib/pyre_bridge/bridge_connection.ex:1
+│
+1 │ defmodule PyreBridge.BridgeConnection do
+│ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+│
+└─ lib/pyre_bridge/bridge_connection_batched.ex:1: PyreBridge.BridgeConnection (module)
+
+
+== Compilation error in file lib/pyre_bridge/bridge_connection_batched.ex ==
+** (CompileError) lib/pyre_bridge/bridge_connection_batched.ex: cannot compile module PyreBridge.BridgeConnection (errors have been logged)
+(elixir 1.19.5) lib/kernel/parallel_compiler.ex:529: anonymous fn/5 in Kernel.ParallelCompiler.spawn_workers/8
