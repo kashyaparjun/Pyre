@@ -170,9 +170,9 @@ def profile_config(name: str) -> ProfileConfig:
     if name == "rigorous":
         return ProfileConfig(
             name="rigorous",
-            warmup_runs=2,
-            measured_runs=5,
-            bridge_iterations=800,
+            warmup_runs=1,
+            measured_runs=3,
+            bridge_iterations=600,
             bridge_throughput_seconds=3.0,
             ab_agents=100,
             ab_workers=20,
