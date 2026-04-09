@@ -1,0 +1,16 @@
+{
+  "python_api_surface": {
+    "runtime": true,
+    "agent": true,
+    "readme": true
+  },
+  "state_and_serialization": {
+    "base_model_enforced": true,
+    "bridge_codec_tests": true,
+    "bridge_protocol_tests": true
+  },
+  "observability": {
+    "bridge_health_api": true,
+    "bridge_health_tests": true
+  }
+}

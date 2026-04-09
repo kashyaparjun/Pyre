@@ -1,0 +1,11 @@
+{
+  "restart_attempts": 15,
+  "restarted_successes": 15,
+  "restart_success_ratio": 1.0,
+  "mean_recovery_ms": 13.450983333556602,
+  "strategy_checks": {
+    "rest_for_one_older_survives": true,
+    "rest_for_one_crashed_restarted": true,
+    "rest_for_one_younger_restarted": true
+  }
+}

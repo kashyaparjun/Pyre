@@ -1,0 +1,55 @@
+{
+  "python": {
+    "feasible": true,
+    "runs": [
+      {
+        "agents": 100,
+        "rss_bytes": 1970241536
+      },
+      {
+        "agents": 1000,
+        "rss_bytes": 1970274304
+      },
+      {
+        "agents": 5000,
+        "rss_bytes": 1976254464
+      }
+    ],
+    "fit": {
+      "bytes_per_agent": 1308.5124546790787,
+      "base_bytes": 1969596126.008819
+    },
+    "base_runtime_bytes_estimate": 1970274304.0
+  },
+  "elixir_bridge": {
+    "feasible": true,
+    "runs": [
+      {
+        "agents": 100,
+        "baseline_rss_bytes": 133136384,
+        "rss_bytes": 133758976,
+        "delta_bytes": 622592
+      },
+      {
+        "agents": 1000,
+        "baseline_rss_bytes": 134987776,
+        "rss_bytes": 138346496,
+        "delta_bytes": 3358720
+      },
+      {
+        "agents": 5000,
+        "baseline_rss_bytes": 134119424,
+        "rss_bytes": 148537344,
+        "delta_bytes": 14417920
+      }
+    ],
+    "fit": {
+      "bytes_per_agent": 2800.010347868692,
+      "base_bytes": 439722.95933365915
+    },
+    "base_runtime_bytes_estimate": 134119424.0,
+    "absolute_base_runtime_bytes": 134119424.0,
+    "idle_beam_rss_bytes": 56737792.0,
+    "bridge_over_idle_beam_bytes": 77381632.0
+  }
+}
