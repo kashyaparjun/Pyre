@@ -931,8 +931,8 @@ async def run_elixir_transport_microbench(
             pool = await _connect_pool(
                 mode,
                 bridge,
-                pool_size=8,
-                max_in_flight_per_conn=64,
+                pool_size=16,
+                max_in_flight_per_conn=128,
             )
             try:
                 payload_results: list[dict[str, object]] = []
@@ -1031,7 +1031,7 @@ async def run_bridge_suite(
     config: ProfileConfig,
     transports: str,
 ) -> dict[str, object]:
-    depths = [1, 32, 512]
+    depths = [1, 32, 128, 512]
 
     async def once() -> dict[str, object]:
         return await run_elixir_transport_microbench(
