@@ -66,23 +66,15 @@ defmodule PyreBridge.BridgeConnection do
         send_busy_response(state, envelope, queue_depth, "in_flight_limit")
 
       true ->
-        # Optimized: Check if agent exists before spawning task
-        # This avoids process spawn overhead for non-existent agents (benchmark case)
-        agent_id = Map.get(envelope, :agent_id)
-
-        case agent_id && PyreBridge.AgentServer.whereis(agent_id) do
-          nil when agent_id != nil ->
-            # Agent doesn't exist, return error immediately
-            send(
-              state.writer_pid,
-              {:write, error_response(envelope.correlation_id, agent_id, :noproc)}
-            )
-
+        # Optimized: Handle ping messages inline without spawning a task
+        case envelope do
+          %{type: "ping", correlation_id: correlation_id} ->
+            send(state.writer_pid, {:write, %{correlation_id: correlation_id, type: "pong"}})
             BridgeMetrics.release_in_flight()
             state
 
           _ ->
-            # Agent exists or no agent_id specified, spawn task as usual
+            # Other messages still spawn a task for isolation
             case Task.Supervisor.start_child(PyreBridge.BridgeExecutionSupervisor, fn ->
                    try do
                      response_envelope = execute_envelope(envelope, state.handler)
