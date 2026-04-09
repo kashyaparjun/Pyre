@@ -220,28 +220,20 @@ class BridgeTransportPool:
             await conn.close()
 
     async def _pick_connection(self) -> BridgeMultiplexedConnection:
+        # Optimized: Simple round-robin with minimal lock time
         async with self._dispatch_lock:
-            best: BridgeMultiplexedConnection | None = None
-            best_pending = self._max_in_flight_per_conn + 1
-            for offset in range(len(self._conns)):
-                idx = (self._next_idx + offset) % len(self._conns)
-                conn = self._conns[idx]
-                pending = conn.pending_count
-                if pending < best_pending:
-                    best = conn
-                    best_pending = pending
-                    if pending == 0:
-                        break
-
-            assert best is not None
+            idx = self._next_idx
             self._next_idx = (self._next_idx + 1) % len(self._conns)
+            conn = self._conns[idx]
 
-            total_pending = sum(conn.pending_count for conn in self._conns)
-            if total_pending > self._max_in_flight_observed:
-                self._max_in_flight_observed = total_pending
-
-            if best_pending >= self._max_in_flight_per_conn:
+            # Check saturation
+            if conn.pending_count >= self._max_in_flight_per_conn:
                 self._backpressure_events += 1
                 raise RuntimeError("transport pool saturated")
 
-            return best
+            # Update metrics
+            total_pending = sum(c.pending_count for c in self._conns)
+            if total_pending > self._max_in_flight_observed:
+                self._max_in_flight_observed = total_pending
+
+            return conn
