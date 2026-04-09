@@ -874,12 +874,13 @@ async def _throughput_for_depth(
     duration_seconds: float,
 ) -> tuple[int, int]:
     deadline = time.perf_counter() + duration_seconds
-    completed = 0
-    busy_errors = 0
-    lock = asyncio.Lock()
+    # Optimized: use asyncio.Queue instead of lock for better concurrency
+    completed_queue: asyncio.Queue[int] = asyncio.Queue()
+    busy_queue: asyncio.Queue[int] = asyncio.Queue()
 
     async def worker() -> None:
-        nonlocal completed, busy_errors
+        local_completed = 0
+        local_busy = 0
         while time.perf_counter() < deadline:
             envelope = BridgeEnvelope(
                 correlation_id=str(uuid4()),
@@ -892,16 +893,26 @@ async def _throughput_for_depth(
             try:
                 response = await pool.request(envelope, timeout_s=0.75)
             except (RuntimeError, TimeoutError):
-                busy_errors += 1
+                local_busy += 1
                 continue
             if response.type is MessageType.ERROR and response.error is not None:
                 if response.error.type == "busy":
-                    busy_errors += 1
+                    local_busy += 1
                     continue
-            async with lock:
-                completed += 1
+            local_completed += 1
+        # Send local counts back via queue
+        await completed_queue.put(local_completed)
+        await busy_queue.put(local_busy)
 
     await asyncio.gather(*[asyncio.create_task(worker()) for _ in range(depth)])
+
+    # Aggregate results
+    completed = 0
+    busy_errors = 0
+    for _ in range(depth):
+        completed += await completed_queue.get()
+        busy_errors += await busy_queue.get()
+
     return completed, busy_errors
 
 
