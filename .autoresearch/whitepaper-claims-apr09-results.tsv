@@ -10,3 +10,5 @@ iteration	commit	metric	status	description
 8	88804a6	8.5	keep	Reverted broken optimizations, best at 44816 mps
 9	534df8b	8.5	keep	Reverted worker pool, best at 44816 mps
 10	07dc3da	8.5	keep	Reverted in-flight increase, stuck at ~44k mps
+11	7643b8e	8.5	keep	Reverted counter-based correlation IDs, back to 44k baseline
+12	b213afd	8.5	keep	Reverted spawn_link optimization, stuck at ~44k mps
