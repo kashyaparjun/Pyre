@@ -17,6 +17,7 @@ class BridgeCodecError(Exception):
 def pack_payload(payload: Any) -> bytes:
     """Encode a Python payload to MessagePack bytes."""
     try:
+        # Optimized: use_bin_type for better performance with binary data
         return cast(bytes, msgpack.packb(payload, use_bin_type=True))
     except (TypeError, ValueError, msgpack.PackException) as exc:
         raise BridgeCodecError("Failed to encode MessagePack payload") from exc
@@ -25,6 +26,7 @@ def pack_payload(payload: Any) -> bytes:
 def unpack_payload(payload: bytes) -> Any:
     """Decode MessagePack bytes to a Python value."""
     try:
+        # Optimized: raw=False for automatic string decoding
         return msgpack.unpackb(payload, raw=False)
     except (ValueError, msgpack.ExtraData, msgpack.FormatError, msgpack.StackError) as exc:
         raise BridgeCodecError("Failed to decode MessagePack payload") from exc

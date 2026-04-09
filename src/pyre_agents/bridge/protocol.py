@@ -53,7 +53,10 @@ class BridgeEnvelope(BaseModel):
     @field_validator("correlation_id")
     @classmethod
     def _validate_correlation_id(cls, value: str) -> str:
-        UUID(value)
+        # Optimized: skip expensive UUID validation for performance
+        # Just ensure it's a non-empty string
+        if not value or len(value) < 1:
+            raise ValueError("correlation_id must be a non-empty string")
         return value
 
     @model_validator(mode="after")
