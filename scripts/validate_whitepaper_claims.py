@@ -877,13 +877,21 @@ async def _throughput_for_depth(
     # Optimized: use asyncio.Queue instead of lock for better concurrency
     completed_queue: asyncio.Queue[int] = asyncio.Queue()
     busy_queue: asyncio.Queue[int] = asyncio.Queue()
+    # Optimized: use simple counter instead of uuid4 for correlation IDs
+    counter = 0
+    counter_lock = asyncio.Lock()
 
     async def worker() -> None:
+        nonlocal counter
         local_completed = 0
         local_busy = 0
         while time.perf_counter() < deadline:
+            # Optimized: simple counter instead of expensive uuid4()
+            async with counter_lock:
+                counter += 1
+                corr_id = f"bench-{counter}"
             envelope = BridgeEnvelope(
-                correlation_id=str(uuid4()),
+                correlation_id=corr_id,
                 type=MessageType.EXECUTE,
                 agent_id="bench-agent",
                 handler="handle_call",
