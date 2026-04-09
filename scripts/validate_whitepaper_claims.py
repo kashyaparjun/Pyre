@@ -173,7 +173,7 @@ def profile_config(name: str) -> ProfileConfig:
             warmup_runs=2,
             measured_runs=5,
             bridge_iterations=800,
-            bridge_throughput_seconds=1.5,
+            bridge_throughput_seconds=3.0,
             ab_agents=100,
             ab_workers=20,
             ab_attempts=6000,
