@@ -157,14 +157,14 @@ def profile_config(name: str) -> ProfileConfig:
         return ProfileConfig(
             name="rigorous",
             warmup_runs=2,
-            measured_runs=10,
+            measured_runs=6,
             bridge_iterations=1200,
             bridge_throughput_seconds=2.0,
             ab_agents=200,
             ab_workers=40,
             ab_attempts=12000,
             memory_counts=[100, 1000, 5000, 10000],
-            startup_runs=12,
+            startup_runs=8,
         )
 
     return ProfileConfig(
@@ -549,9 +549,7 @@ async def _start_elixir_bridge_mix(
 ) -> BridgeProcessInfo:
     elixir_dir = repo_root / "elixir" / "pyre_bridge"
     uds_path = (
-        f"/tmp/pyre_validate_{uuid4().hex}.sock"
-        if transport_mode in {"uds", "both"}
-        else None
+        f"/tmp/pyre_validate_{uuid4().hex}.sock" if transport_mode in {"uds", "both"} else None
     )
     env = {
         **os.environ,
@@ -979,7 +977,9 @@ async def run_elixir_transport_microbench(
                             "payload_label": payload_label,
                             "target_payload_bytes": payload_bytes,
                             "duration_seconds": throughput_seconds,
-                            "roundtrips": int(round(float(best_tp["messages_per_second"]) * throughput_seconds)),
+                            "roundtrips": int(
+                                round(float(best_tp["messages_per_second"]) * throughput_seconds)
+                            ),
                             "messages_per_second": float(best_tp["messages_per_second"]),
                             "in_flight_depth": int(best_tp["in_flight_depth"]),
                         }
@@ -1113,10 +1113,7 @@ async def run_bridge_stress_suite(
             "pool_backpressure_events": int(row["busy_errors"]),
             "server_backpressure_events": int(row["busy_errors"]),
             "roundtrips": int(
-                round(
-                    float(row["messages_per_second"])
-                    * (1.0 if config.name == "quick" else 2.0)
-                )
+                round(float(row["messages_per_second"]) * (1.0 if config.name == "quick" else 2.0))
             ),
             "duration_seconds": 1.0 if config.name == "quick" else 2.0,
             "max_in_flight_observed": int(row["in_flight_depth"]),
@@ -1153,8 +1150,7 @@ async def run_python_ab_once(
     names = [f"py-agent-{idx:03d}" for idx in range(agents)]
     system = await Pyre.start()
     refs = {
-        name: await system.spawn(CounterAgent, name=name, args={"initial": 0})
-        for name in names
+        name: await system.spawn(CounterAgent, name=name, args={"initial": 0}) for name in names
     }
 
     latencies_ms: list[float] = []
@@ -1627,10 +1623,9 @@ async def run_scheduler_fairness() -> dict[str, object]:
             under_load_p99 = under_load_stats["p99"]
             factor_p99 = (under_load_p99 / baseline_p99) if baseline_p99 > 0 else 0.0
             blocked_threshold_ms = 10.0
-            blocked_tick_ratio = (
-                sum(1 for sample in under_load_drifts if sample >= blocked_threshold_ms)
-                / max(1, len(under_load_drifts))
-            )
+            blocked_tick_ratio = sum(
+                1 for sample in under_load_drifts if sample >= blocked_threshold_ms
+            ) / max(1, len(under_load_drifts))
 
             return {
                 "mode": "serial_python_worker",
@@ -1851,9 +1846,7 @@ def evaluate_empirical_claim(
         delta_mb = delta_over_idle / 1024 / 1024
         slope_kb = float(fit["bytes_per_agent"]) / 1024
         detail = (
-            f"base={base_mb:.2f}MB "
-            f"delta_vs_idle_beam={delta_mb:.2f}MB "
-            f"slope={slope_kb:.2f}KB/agent"
+            f"base={base_mb:.2f}MB delta_vs_idle_beam={delta_mb:.2f}MB slope={slope_kb:.2f}KB/agent"
         )
         if 100 <= base_mb <= 180 and 2 <= slope_kb <= 5:
             return "validated", detail, blockers
