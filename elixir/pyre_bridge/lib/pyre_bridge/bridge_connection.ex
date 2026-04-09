@@ -66,41 +66,19 @@ defmodule PyreBridge.BridgeConnection do
         send_busy_response(state, envelope, queue_depth, "in_flight_limit")
 
       true ->
-        # Optimized: Handle ping messages inline without spawning a task
-        case envelope do
-          %{type: "ping", correlation_id: correlation_id} ->
-            send(state.writer_pid, {:write, %{correlation_id: correlation_id, type: "pong"}})
+        # Optimized: Use spawn_link instead of Task.Supervisor for lower overhead
+        parent = self()
+
+        spawn_link(fn ->
+          try do
+            response_envelope = execute_envelope(envelope, state.handler)
+            send(state.writer_pid, {:write, response_envelope})
+          after
             BridgeMetrics.release_in_flight()
-            state
+          end
+        end)
 
-          _ ->
-            # Other messages still spawn a task for isolation
-            case Task.Supervisor.start_child(PyreBridge.BridgeExecutionSupervisor, fn ->
-                   try do
-                     response_envelope = execute_envelope(envelope, state.handler)
-                     send(state.writer_pid, {:write, response_envelope})
-                   after
-                     BridgeMetrics.release_in_flight()
-                   end
-                 end) do
-              {:ok, _pid} ->
-                state
-
-              {:error, :max_children} ->
-                BridgeMetrics.release_in_flight()
-                send_busy_response(state, envelope, queue_depth, "execution_pool_limit")
-
-              {:error, reason} ->
-                BridgeMetrics.release_in_flight()
-
-                send(
-                  state.writer_pid,
-                  {:write, error_response(envelope.correlation_id, envelope.agent_id, reason)}
-                )
-
-                state
-            end
-        end
+        state
     end
   end
 
