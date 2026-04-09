@@ -66,24 +66,41 @@ defmodule PyreBridge.BridgeConnection do
         send_busy_response(state, envelope, queue_depth, "in_flight_limit")
 
       true ->
-        # Optimized: Use worker pool instead of spawning new tasks for each request
-        # This eliminates Task.Supervisor.start_child overhead
-        spawn_fn = fn ->
-          try do
-            response_envelope = execute_envelope(envelope, state.handler)
-            send(state.writer_pid, {:write, response_envelope})
-          after
+        # Optimized: Handle ping messages inline without spawning a task
+        case envelope do
+          %{type: "ping", correlation_id: correlation_id} ->
+            send(state.writer_pid, {:write, %{correlation_id: correlation_id, type: "pong"}})
             BridgeMetrics.release_in_flight()
-          end
+            state
+
+          _ ->
+            # Other messages still spawn a task for isolation
+            case Task.Supervisor.start_child(PyreBridge.BridgeExecutionSupervisor, fn ->
+                   try do
+                     response_envelope = execute_envelope(envelope, state.handler)
+                     send(state.writer_pid, {:write, response_envelope})
+                   after
+                     BridgeMetrics.release_in_flight()
+                   end
+                 end) do
+              {:ok, _pid} ->
+                state
+
+              {:error, :max_children} ->
+                BridgeMetrics.release_in_flight()
+                send_busy_response(state, envelope, queue_depth, "execution_pool_limit")
+
+              {:error, reason} ->
+                BridgeMetrics.release_in_flight()
+
+                send(
+                  state.writer_pid,
+                  {:write, error_response(envelope.correlation_id, envelope.agent_id, reason)}
+                )
+
+                state
+            end
         end
-
-        # Execute in worker pool synchronously
-        PyreBridge.BridgeWorkerPool.execute_request(fn ->
-          spawn_fn.()
-          :ok
-        end)
-
-        state
     end
   end
 
