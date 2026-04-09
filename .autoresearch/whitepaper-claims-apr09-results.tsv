@@ -12,3 +12,4 @@ iteration	commit	metric	status	description
 10	07dc3da	8.5	keep	Reverted in-flight increase, stuck at ~44k mps
 11	7643b8e	8.5	keep	Reverted counter-based correlation IDs, back to 44k baseline
 12	b213afd	8.5	keep	Reverted spawn_link optimization, stuck at ~44k mps
+13	b9226d1	8.5	keep	Extended duration to 5.0s, still at ~43k mps (43,961 median)

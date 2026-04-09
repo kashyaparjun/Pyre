@@ -1,0 +1,2153 @@
+Task was destroyed but it is pending!
+task: <Task pending name='Task-9838' coro=<BridgeMultiplexedConnection._recv_loop() done, defined at /Users/arjun/Documents/Pyre/src/pyre_agents/bridge/transport.py:136> wait_for=<Future pending cb=[Task.task_wakeup()]>>
+Task was destroyed but it is pending!
+task: <Task pending name='Task-9839' coro=<BridgeMultiplexedConnection._recv_loop() done, defined at /Users/arjun/Documents/Pyre/src/pyre_agents/bridge/transport.py:136> wait_for=<Future pending cb=[Task.task_wakeup()]>>
+Task was destroyed but it is pending!
+task: <Task pending name='Task-9840' coro=<BridgeMultiplexedConnection._recv_loop() done, defined at /Users/arjun/Documents/Pyre/src/pyre_agents/bridge/transport.py:136> wait_for=<Future pending cb=[Task.task_wakeup()]>>
+Task was destroyed but it is pending!
+task: <Task pending name='Task-9841' coro=<BridgeMultiplexedConnection._recv_loop() done, defined at /Users/arjun/Documents/Pyre/src/pyre_agents/bridge/transport.py:136> wait_for=<Future pending cb=[Task.task_wakeup()]>>
+Task was destroyed but it is pending!
+task: <Task pending name='Task-9842' coro=<BridgeMultiplexedConnection._recv_loop() done, defined at /Users/arjun/Documents/Pyre/src/pyre_agents/bridge/transport.py:136> wait_for=<Future pending cb=[Task.task_wakeup()]>>
+Task was destroyed but it is pending!
+task: <Task pending name='Task-26241' coro=<BridgeMultiplexedConnection._recv_loop() done, defined at /Users/arjun/Documents/Pyre/src/pyre_agents/bridge/transport.py:136> wait_for=<Future pending cb=[Task.task_wakeup()]>>
+Task was destroyed but it is pending!
+task: <Task pending name='Task-26242' coro=<BridgeMultiplexedConnection._recv_loop() done, defined at /Users/arjun/Documents/Pyre/src/pyre_agents/bridge/transport.py:136> wait_for=<Future pending cb=[Task.task_wakeup()]>>
+Task was destroyed but it is pending!
+task: <Task pending name='Task-26243' coro=<BridgeMultiplexedConnection._recv_loop() done, defined at /Users/arjun/Documents/Pyre/src/pyre_agents/bridge/transport.py:136> wait_for=<Future pending cb=[Task.task_wakeup()]>>
+Task was destroyed but it is pending!
+task: <Task pending name='Task-26244' coro=<BridgeMultiplexedConnection._recv_loop() done, defined at /Users/arjun/Documents/Pyre/src/pyre_agents/bridge/transport.py:136> wait_for=<Future pending cb=[Task.task_wakeup()]>>
+Task was destroyed but it is pending!
+task: <Task pending name='Task-26245' coro=<BridgeMultiplexedConnection._recv_loop() done, defined at /Users/arjun/Documents/Pyre/src/pyre_agents/bridge/transport.py:136> wait_for=<Future pending cb=[Task.task_wakeup()]>>
+Task was destroyed but it is pending!
+task: <Task pending name='Task-26246' coro=<BridgeMultiplexedConnection._recv_loop() done, defined at /Users/arjun/Documents/Pyre/src/pyre_agents/bridge/transport.py:136> wait_for=<Future pending cb=[Task.task_wakeup()]>>
+Task was destroyed but it is pending!
+task: <Task pending name='Task-26247' coro=<BridgeMultiplexedConnection._recv_loop() done, defined at /Users/arjun/Documents/Pyre/src/pyre_agents/bridge/transport.py:136> wait_for=<Future pending cb=[Task.task_wakeup()]>>
+{
+  "benchmark": "whitepaper-claim-validation",
+  "generated_at_utc": "2026-04-09T15:15:22.039799+00:00",
+  "profile": "rigorous",
+  "claim_scope": "all",
+  "require_rigorous_for_validated": true,
+  "transports": "both",
+  "publication_ready": true,
+  "environment": {
+    "python": "3.12.7",
+    "platform": "Darwin 25.3.0 (arm64)",
+    "mix_version": "Erlang/OTP 28 [erts-16.3] [source] [64-bit] [smp:8:8] [ds:8:8:10] [async-threads:1] [jit] [dtrace] |  | Mix 1.19.5 (compiled with Erlang/OTP 28)",
+    "erlang_version": "\"28\""
+  },
+  "controls": {
+    "warmup_runs": 1,
+    "measured_runs": 3,
+    "rigorous_min_runs_target": 10,
+    "notes": [
+      "Local workstation measurements include hardware and scheduler variance.",
+      "UDS claims require UDS transport measurements.",
+      "Claims are evaluated against March 2026 whitepaper text."
+    ]
+  },
+  "claims": [
+    {
+      "claim_id": "E1",
+      "quote": "The bridge round-trip for a typical agent message (under 1KB of state) adds 0.1-0.3ms of latency.",
+      "claim_class": "empirical",
+      "evidence_type": "benchmark",
+      "metric": "bridge.uds.small.p50_ms and bridge.uds.small.p99_ms",
+      "threshold": "validated if p50 <= 0.3 and p99 <= 0.5",
+      "partial_rule": "partial if p50 <= 0.5 and p99 <= 1.0",
+      "caveats": "Requires UDS benchmark transport source.",
+      "required_profile": "rigorous",
+      "transport_required": "uds",
+      "suite_keys": [
+        "bridge_suite"
+      ],
+      "class": "empirical"
+    },
+    {
+      "claim_id": "E2",
+      "quote": "The Unix domain socket bridge supports 50,000-100,000 messages per second.",
+      "claim_class": "empirical",
+      "evidence_type": "benchmark",
+      "metric": "bridge.uds.small.messages_per_second",
+      "threshold": "validated if median >= 50000",
+      "partial_rule": "partial if median >= 10000",
+      "caveats": "UDS source of truth only.",
+      "required_profile": "rigorous",
+      "transport_required": "uds",
+      "suite_keys": [
+        "bridge_suite"
+      ],
+      "class": "empirical"
+    },
+    {
+      "claim_id": "E3",
+      "quote": "Booting the Elixir runtime adds 500-1000ms to application startup.",
+      "claim_class": "empirical",
+      "evidence_type": "benchmark",
+      "metric": "startup.boot_ms median",
+      "threshold": "validated if median <= 1000",
+      "partial_rule": "partial if median <= 1500",
+      "caveats": "Local workstation variance expected.",
+      "required_profile": "rigorous",
+      "transport_required": "none",
+      "suite_keys": [
+        "startup_overhead"
+      ],
+      "class": "empirical"
+    },
+    {
+      "claim_id": "E4",
+      "quote": "Supervisors restart child processes when they fail with one_for_one, one_for_all, and rest_for_one semantics.",
+      "claim_class": "empirical",
+      "evidence_type": "integration_test",
+      "metric": "recovery.restart_success_ratio and strategy checks",
+      "threshold": "validated if ratio >= 0.99 and all checks pass",
+      "partial_rule": "partial if ratio >= 0.90 and 2/3 checks pass",
+      "caveats": "Bridge recovery checks over Elixir runtime.",
+      "required_profile": "quick",
+      "transport_required": "tcp",
+      "suite_keys": [
+        "failure_recovery"
+      ],
+      "class": "empirical"
+    },
+    {
+      "claim_id": "E5",
+      "quote": "The Pyre bridge adds approximately 143MB of base memory and each agent on the Elixir side consumes approximately 2.9KB.",
+      "claim_class": "empirical",
+      "evidence_type": "benchmark",
+      "metric": "memory_scaling.elixir.absolute_base_runtime_bytes and bytes_per_agent",
+      "threshold": "validated if base in [100,180]MB and slope in [2,5]KB",
+      "partial_rule": "partial if base in [80,200]MB and slope <= 10KB",
+      "caveats": "Absolute RSS is verdict source; idle-BEAM delta is contextual.",
+      "required_profile": "rigorous",
+      "transport_required": "none",
+      "suite_keys": [
+        "memory_scaling"
+      ],
+      "class": "empirical"
+    },
+    {
+      "claim_id": "E6",
+      "quote": "No preemption within Python: CPU-intensive handler work can block the Python worker/event loop.",
+      "claim_class": "empirical",
+      "evidence_type": "benchmark",
+      "metric": "scheduler_fairness.no_preemption_timer_drift.blocking_factor_p99",
+      "threshold": "validated if blocking_factor >= 2.0",
+      "partial_rule": "partial if blocking_factor >= 1.3",
+      "caveats": "Synthetic tail-latency amplification benchmark.",
+      "required_profile": "quick",
+      "transport_required": "none",
+      "suite_keys": [
+        "scheduler_fairness"
+      ],
+      "class": "empirical"
+    },
+    {
+      "claim_id": "A1",
+      "quote": "Developers write pure Python and interact with Python APIs.",
+      "claim_class": "architectural",
+      "evidence_type": "static_analysis",
+      "metric": "python_api_surface_present",
+      "threshold": "validated if public Python runtime APIs are available and documented",
+      "partial_rule": "partial if APIs exist but docs/tests missing",
+      "caveats": "Non-benchmark architectural claim.",
+      "required_profile": "quick",
+      "transport_required": "none",
+      "suite_keys": [
+        "architectural_evidence"
+      ],
+      "class": "architectural"
+    },
+    {
+      "claim_id": "A2",
+      "quote": "State is serialized across the bridge and constrained to serializable models.",
+      "claim_class": "architectural",
+      "evidence_type": "static_analysis",
+      "metric": "state_validation_and_bridge_codec_checks",
+      "threshold": "validated if BaseModel enforcement + codec tests present",
+      "partial_rule": "partial if only one evidence source present",
+      "caveats": "Validated through code/test evidence links.",
+      "required_profile": "quick",
+      "transport_required": "none",
+      "suite_keys": [
+        "architectural_evidence"
+      ],
+      "class": "architectural"
+    },
+    {
+      "claim_id": "A3",
+      "quote": "Bridge/runtime observability provides lifecycle and error event visibility.",
+      "claim_class": "architectural",
+      "evidence_type": "integration_test",
+      "metric": "bridge_health_event_types_and_tests",
+      "threshold": "validated if event API + integration tests exist",
+      "partial_rule": "partial if API exists without tests",
+      "caveats": "Evidence from health event hooks and tests.",
+      "required_profile": "quick",
+      "transport_required": "none",
+      "suite_keys": [
+        "architectural_evidence"
+      ],
+      "class": "architectural"
+    },
+    {
+      "claim_id": "F1",
+      "quote": "Distributed clustering for cross-machine agents is a future direction.",
+      "claim_class": "future/distributed",
+      "evidence_type": "blocked_future",
+      "metric": "blocked_by_local_single_node_scope",
+      "threshold": "unsupported_in_scope",
+      "partial_rule": "n/a",
+      "caveats": "Requires multi-node distributed implementation.",
+      "required_profile": "quick",
+      "transport_required": "none",
+      "suite_keys": [],
+      "class": "future/distributed"
+    },
+    {
+      "claim_id": "F2",
+      "quote": "Hot code reloading for Python handlers is a future direction.",
+      "claim_class": "future/distributed",
+      "evidence_type": "blocked_future",
+      "metric": "blocked_by_unimplemented_feature",
+      "threshold": "unsupported_in_scope",
+      "partial_rule": "n/a",
+      "caveats": "Requires explicit runtime/versioned handler infrastructure.",
+      "required_profile": "quick",
+      "transport_required": "none",
+      "suite_keys": [],
+      "class": "future/distributed"
+    },
+    {
+      "claim_id": "F3",
+      "quote": "Streaming bridge message types are a future direction.",
+      "claim_class": "future/distributed",
+      "evidence_type": "blocked_future",
+      "metric": "blocked_by_protocol_extension_not_present",
+      "threshold": "unsupported_in_scope",
+      "partial_rule": "n/a",
+      "caveats": "Current protocol is request/response oriented.",
+      "required_profile": "quick",
+      "transport_required": "none",
+      "suite_keys": [],
+      "class": "future/distributed"
+    },
+    {
+      "claim_id": "F4",
+      "quote": "WASM-based isolation as an alternative is a future direction.",
+      "claim_class": "future/distributed",
+      "evidence_type": "blocked_future",
+      "metric": "blocked_by_unimplemented_runtime_mode",
+      "threshold": "unsupported_in_scope",
+      "partial_rule": "n/a",
+      "caveats": "No WASM execution backend in current repository.",
+      "required_profile": "quick",
+      "transport_required": "none",
+      "suite_keys": [],
+      "class": "future/distributed"
+    }
+  ],
+  "claim_verdicts": [
+    {
+      "claim_id": "E1",
+      "status": "validated",
+      "detail": "p50=0.1114ms p99=0.1795ms",
+      "class": "empirical",
+      "evidence_type": "benchmark",
+      "gate_status": "meets_gate",
+      "required_profile": "rigorous",
+      "transport_source": "uds",
+      "blockers": []
+    },
+    {
+      "claim_id": "E2",
+      "status": "partially_validated",
+      "detail": "median_mps=42961.0",
+      "class": "empirical",
+      "evidence_type": "benchmark",
+      "gate_status": "meets_gate",
+      "required_profile": "rigorous",
+      "transport_source": "uds",
+      "blockers": []
+    },
+    {
+      "claim_id": "E3",
+      "status": "validated",
+      "detail": "boot_median=697.2ms",
+      "class": "empirical",
+      "evidence_type": "benchmark",
+      "gate_status": "meets_gate",
+      "required_profile": "rigorous",
+      "transport_source": "none",
+      "blockers": []
+    },
+    {
+      "claim_id": "E4",
+      "status": "validated",
+      "detail": "ratio=1.000 checks=3/3",
+      "class": "empirical",
+      "evidence_type": "integration_test",
+      "gate_status": "meets_gate",
+      "required_profile": "quick",
+      "transport_source": "tcp",
+      "blockers": []
+    },
+    {
+      "claim_id": "E5",
+      "status": "validated",
+      "detail": "base=127.19MB delta_vs_idle_beam=73.56MB slope=3.20KB/agent",
+      "class": "empirical",
+      "evidence_type": "benchmark",
+      "gate_status": "meets_gate",
+      "required_profile": "rigorous",
+      "transport_source": "none",
+      "blockers": []
+    },
+    {
+      "claim_id": "E6",
+      "status": "validated",
+      "detail": "blocking_factor=97.07 blocked_tick_ratio=0.028",
+      "class": "empirical",
+      "evidence_type": "benchmark",
+      "gate_status": "meets_gate",
+      "required_profile": "quick",
+      "transport_source": "none",
+      "blockers": []
+    },
+    {
+      "claim_id": "A1",
+      "status": "validated",
+      "detail": "api evidence 3/3",
+      "class": "architectural",
+      "evidence_type": "static_analysis",
+      "gate_status": "meets_gate",
+      "required_profile": "quick",
+      "transport_source": "none",
+      "blockers": []
+    },
+    {
+      "claim_id": "A2",
+      "status": "validated",
+      "detail": "serialization evidence 3/3",
+      "class": "architectural",
+      "evidence_type": "static_analysis",
+      "gate_status": "meets_gate",
+      "required_profile": "quick",
+      "transport_source": "none",
+      "blockers": []
+    },
+    {
+      "claim_id": "A3",
+      "status": "validated",
+      "detail": "observability evidence 2/2",
+      "class": "architectural",
+      "evidence_type": "integration_test",
+      "gate_status": "meets_gate",
+      "required_profile": "quick",
+      "transport_source": "none",
+      "blockers": []
+    },
+    {
+      "claim_id": "F1",
+      "status": "unsupported_in_scope",
+      "detail": "future/distributed claim outside local single-node validation scope",
+      "class": "future/distributed",
+      "evidence_type": "blocked_future",
+      "gate_status": "not_applicable",
+      "required_profile": "quick",
+      "transport_source": "none",
+      "blockers": [
+        "Requires multi-node distributed implementation."
+      ]
+    },
+    {
+      "claim_id": "F2",
+      "status": "unsupported_in_scope",
+      "detail": "future/distributed claim outside local single-node validation scope",
+      "class": "future/distributed",
+      "evidence_type": "blocked_future",
+      "gate_status": "not_applicable",
+      "required_profile": "quick",
+      "transport_source": "none",
+      "blockers": [
+        "Requires explicit runtime/versioned handler infrastructure."
+      ]
+    },
+    {
+      "claim_id": "F3",
+      "status": "unsupported_in_scope",
+      "detail": "future/distributed claim outside local single-node validation scope",
+      "class": "future/distributed",
+      "evidence_type": "blocked_future",
+      "gate_status": "not_applicable",
+      "required_profile": "quick",
+      "transport_source": "none",
+      "blockers": [
+        "Current protocol is request/response oriented."
+      ]
+    },
+    {
+      "claim_id": "F4",
+      "status": "unsupported_in_scope",
+      "detail": "future/distributed claim outside local single-node validation scope",
+      "class": "future/distributed",
+      "evidence_type": "blocked_future",
+      "gate_status": "not_applicable",
+      "required_profile": "quick",
+      "transport_source": "none",
+      "blockers": [
+        "No WASM execution backend in current repository."
+      ]
+    }
+  ],
+  "coverage_summary": {
+    "by_class": {
+      "empirical": 6,
+      "architectural": 3,
+      "future/distributed": 4
+    },
+    "by_status": {
+      "validated": 8,
+      "partially_validated": 1,
+      "unsupported_in_scope": 4
+    }
+  },
+  "transport_concurrency_profile": {
+    "in_flight_depths": [
+      1,
+      8,
+      32,
+      128,
+      512
+    ],
+    "duration_seconds": 2.0,
+    "payload_bytes": 512,
+    "pool_size": 8,
+    "max_in_flight_per_conn": 64,
+    "enable_backpressure": true
+  },
+  "backpressure_events": {
+    "pool": 214575,
+    "server": 214575
+  },
+  "queue_depth_percentiles": {
+    "p50": 1.0,
+    "p95": 1.0,
+    "p99": 1.0
+  },
+  "restart_latency_percentiles": {
+    "p50": 0.0,
+    "p95": 0.0,
+    "p99": 0.0
+  },
+  "raw_artifacts": {
+    "bridge_suite": "docs/benchmarks/raw/whitepaper_validation/rigorous_20260409T151522Z/bridge_suite.json",
+    "python_bridge_reference": "docs/benchmarks/raw/whitepaper_validation/rigorous_20260409T151522Z/python_bridge_reference.json",
+    "bridge_stress": "docs/benchmarks/raw/whitepaper_validation/rigorous_20260409T151522Z/bridge_stress.json",
+    "memory_scaling": "docs/benchmarks/raw/whitepaper_validation/rigorous_20260409T151522Z/memory_scaling.json",
+    "failure_recovery": "docs/benchmarks/raw/whitepaper_validation/rigorous_20260409T151522Z/failure_recovery.json",
+    "scheduler_fairness": "docs/benchmarks/raw/whitepaper_validation/rigorous_20260409T151522Z/scheduler_fairness.json",
+    "startup_overhead": "docs/benchmarks/raw/whitepaper_validation/rigorous_20260409T151522Z/startup_overhead.json",
+    "architectural_evidence": "docs/benchmarks/raw/whitepaper_validation/rigorous_20260409T151522Z/architectural_evidence.json"
+  },
+  "suite_summary": {
+    "bridge_suite": {
+      "warmup_runs": 1,
+      "measured_runs": 3,
+      "in_flight_depths": [
+        1,
+        32,
+        512
+      ],
+      "transport_runs": [
+        {
+          "benchmark": "elixir-bridge-transport-microbench",
+          "transport_results": [
+            {
+              "transport": "tcp",
+              "in_flight_depths": [
+                1,
+                32,
+                512
+              ],
+              "payload_results": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "concurrency_sweep": [
+                    {
+                      "in_flight_depth": 1,
+                      "samples": 1000,
+                      "p50_ms": 0.10839599999999999,
+                      "p95_ms": 0.161,
+                      "p99_ms": 0.193708,
+                      "mean_ms": 0.119666,
+                      "ci95_ms": 0.009862976570557493,
+                      "messages_per_second": 9032.4,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 32,
+                      "samples": 250,
+                      "p50_ms": 0.9895,
+                      "p95_ms": 1.418125,
+                      "p99_ms": 1.548417,
+                      "mean_ms": 0.974308504,
+                      "ci95_ms": 0.03335379892573538,
+                      "messages_per_second": 32226.4,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 512,
+                      "samples": 64,
+                      "p50_ms": 1.5727295,
+                      "p95_ms": 2.220334,
+                      "p99_ms": 2.235875,
+                      "mean_ms": 1.606416671875,
+                      "ci95_ms": 0.0979792579150606,
+                      "messages_per_second": 15222.2,
+                      "busy_errors": 516172
+                    }
+                  ]
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "concurrency_sweep": [
+                    {
+                      "in_flight_depth": 1,
+                      "samples": 1000,
+                      "p50_ms": 0.114917,
+                      "p95_ms": 0.161666,
+                      "p99_ms": 0.197417,
+                      "mean_ms": 0.12115438299999999,
+                      "ci95_ms": 0.001319610153266596,
+                      "messages_per_second": 8095.4,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 32,
+                      "samples": 250,
+                      "p50_ms": 1.345542,
+                      "p95_ms": 1.935458,
+                      "p99_ms": 2.199625,
+                      "mean_ms": 1.350186664,
+                      "ci95_ms": 0.04513783694750876,
+                      "messages_per_second": 24893.2,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 512,
+                      "samples": 64,
+                      "p50_ms": 2.367375,
+                      "p95_ms": 3.162,
+                      "p99_ms": 3.174167,
+                      "mean_ms": 2.368293015625,
+                      "ci95_ms": 0.12488463229218122,
+                      "messages_per_second": 12595.8,
+                      "busy_errors": 412795
+                    }
+                  ]
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "concurrency_sweep": [
+                    {
+                      "in_flight_depth": 1,
+                      "samples": 1000,
+                      "p50_ms": 1.97975,
+                      "p95_ms": 2.29925,
+                      "p99_ms": 2.487542,
+                      "mean_ms": 2.000659314,
+                      "ci95_ms": 0.0104825581122081,
+                      "messages_per_second": 491.6,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 32,
+                      "samples": 250,
+                      "p50_ms": 41.049291499999995,
+                      "p95_ms": 49.805209,
+                      "p99_ms": 52.205458,
+                      "mean_ms": 40.712719484000004,
+                      "ci95_ms": 0.7230651172555016,
+                      "messages_per_second": 819.2,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 512,
+                      "samples": 64,
+                      "p50_ms": 43.174521,
+                      "p95_ms": 47.857166,
+                      "p99_ms": 48.773125,
+                      "mean_ms": 42.9707968125,
+                      "ci95_ms": 0.7966354690887133,
+                      "messages_per_second": 767.8,
+                      "busy_errors": 241
+                    }
+                  ]
+                }
+              ],
+              "latency": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "samples": 1000,
+                  "p50_ms": 0.10839599999999999,
+                  "p95_ms": 0.161,
+                  "p99_ms": 0.193708,
+                  "mean_ms": 0.119666,
+                  "ci95_ms": 0.009862976570557493,
+                  "in_flight_depth": 1
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "samples": 1000,
+                  "p50_ms": 0.114917,
+                  "p95_ms": 0.161666,
+                  "p99_ms": 0.197417,
+                  "mean_ms": 0.12115438299999999,
+                  "ci95_ms": 0.001319610153266596,
+                  "in_flight_depth": 1
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "samples": 1000,
+                  "p50_ms": 1.97975,
+                  "p95_ms": 2.29925,
+                  "p99_ms": 2.487542,
+                  "mean_ms": 2.000659314,
+                  "ci95_ms": 0.0104825581122081,
+                  "in_flight_depth": 1
+                }
+              ],
+              "throughput": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "duration_seconds": 5.0,
+                  "roundtrips": 161132,
+                  "messages_per_second": 32226.4,
+                  "in_flight_depth": 32
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "duration_seconds": 5.0,
+                  "roundtrips": 124466,
+                  "messages_per_second": 24893.2,
+                  "in_flight_depth": 32
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "duration_seconds": 5.0,
+                  "roundtrips": 4096,
+                  "messages_per_second": 819.2,
+                  "in_flight_depth": 32
+                }
+              ]
+            },
+            {
+              "transport": "uds",
+              "in_flight_depths": [
+                1,
+                32,
+                512
+              ],
+              "payload_results": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "concurrency_sweep": [
+                    {
+                      "in_flight_depth": 1,
+                      "samples": 1000,
+                      "p50_ms": 0.111292,
+                      "p95_ms": 0.143167,
+                      "p99_ms": 0.165833,
+                      "mean_ms": 0.11150486899999999,
+                      "ci95_ms": 0.001213013132239202,
+                      "messages_per_second": 8402.0,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 32,
+                      "samples": 250,
+                      "p50_ms": 0.865479,
+                      "p95_ms": 1.669833,
+                      "p99_ms": 1.896583,
+                      "mean_ms": 0.9231569879999999,
+                      "ci95_ms": 0.04216999072371812,
+                      "messages_per_second": 42961.0,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 512,
+                      "samples": 64,
+                      "p50_ms": 1.5073750000000001,
+                      "p95_ms": 2.047958,
+                      "p99_ms": 2.05325,
+                      "mean_ms": 1.567875625,
+                      "ci95_ms": 0.0742975558185832,
+                      "messages_per_second": 17374.8,
+                      "busy_errors": 556147
+                    }
+                  ]
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "concurrency_sweep": [
+                    {
+                      "in_flight_depth": 1,
+                      "samples": 1000,
+                      "p50_ms": 0.26493750000000005,
+                      "p95_ms": 0.3225,
+                      "p99_ms": 0.36475,
+                      "mean_ms": 0.260897622,
+                      "ci95_ms": 0.0028014497731943078,
+                      "messages_per_second": 3625.6,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 32,
+                      "samples": 250,
+                      "p50_ms": 1.7996665,
+                      "p95_ms": 2.637625,
+                      "p99_ms": 2.902708,
+                      "mean_ms": 1.876074968,
+                      "ci95_ms": 0.05578646197319465,
+                      "messages_per_second": 17261.8,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 512,
+                      "samples": 64,
+                      "p50_ms": 2.953021,
+                      "p95_ms": 3.823625,
+                      "p99_ms": 3.876291,
+                      "mean_ms": 2.917373734375,
+                      "ci95_ms": 0.15975876037538253,
+                      "messages_per_second": 13032.6,
+                      "busy_errors": 192271
+                    }
+                  ]
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "concurrency_sweep": [
+                    {
+                      "in_flight_depth": 1,
+                      "samples": 1000,
+                      "p50_ms": 18.223750000000003,
+                      "p95_ms": 19.768083,
+                      "p99_ms": 21.480917,
+                      "mean_ms": 18.138452299,
+                      "ci95_ms": 0.07448451922144803,
+                      "messages_per_second": 55.6,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 32,
+                      "samples": 250,
+                      "p50_ms": 173.2519165,
+                      "p95_ms": 478.709333,
+                      "p99_ms": 526.311459,
+                      "mean_ms": 206.518963664,
+                      "ci95_ms": 11.611849640105069,
+                      "messages_per_second": 179.2,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 512,
+                      "samples": 64,
+                      "p50_ms": 663.2020625,
+                      "p95_ms": 757.967708,
+                      "p99_ms": 758.437083,
+                      "mean_ms": 576.277985703125,
+                      "ci95_ms": 46.743820820341774,
+                      "messages_per_second": 11.6,
+                      "busy_errors": 1743
+                    }
+                  ]
+                }
+              ],
+              "latency": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "samples": 1000,
+                  "p50_ms": 0.111292,
+                  "p95_ms": 0.143167,
+                  "p99_ms": 0.165833,
+                  "mean_ms": 0.11150486899999999,
+                  "ci95_ms": 0.001213013132239202,
+                  "in_flight_depth": 1
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "samples": 1000,
+                  "p50_ms": 0.26493750000000005,
+                  "p95_ms": 0.3225,
+                  "p99_ms": 0.36475,
+                  "mean_ms": 0.260897622,
+                  "ci95_ms": 0.0028014497731943078,
+                  "in_flight_depth": 1
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "samples": 1000,
+                  "p50_ms": 18.223750000000003,
+                  "p95_ms": 19.768083,
+                  "p99_ms": 21.480917,
+                  "mean_ms": 18.138452299,
+                  "ci95_ms": 0.07448451922144803,
+                  "in_flight_depth": 1
+                }
+              ],
+              "throughput": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "duration_seconds": 5.0,
+                  "roundtrips": 214805,
+                  "messages_per_second": 42961.0,
+                  "in_flight_depth": 32
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "duration_seconds": 5.0,
+                  "roundtrips": 86309,
+                  "messages_per_second": 17261.8,
+                  "in_flight_depth": 32
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "duration_seconds": 5.0,
+                  "roundtrips": 896,
+                  "messages_per_second": 179.2,
+                  "in_flight_depth": 32
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "benchmark": "elixir-bridge-transport-microbench",
+          "transport_results": [
+            {
+              "transport": "tcp",
+              "in_flight_depths": [
+                1,
+                32,
+                512
+              ],
+              "payload_results": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "concurrency_sweep": [
+                    {
+                      "in_flight_depth": 1,
+                      "samples": 1000,
+                      "p50_ms": 0.101625,
+                      "p95_ms": 0.158708,
+                      "p99_ms": 0.198416,
+                      "mean_ms": 0.11514724,
+                      "ci95_ms": 0.010290371684583638,
+                      "messages_per_second": 9060.4,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 32,
+                      "samples": 250,
+                      "p50_ms": 1.0753545,
+                      "p95_ms": 1.60925,
+                      "p99_ms": 1.799875,
+                      "mean_ms": 1.070638164,
+                      "ci95_ms": 0.0409430008814762,
+                      "messages_per_second": 32219.4,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 512,
+                      "samples": 64,
+                      "p50_ms": 1.784542,
+                      "p95_ms": 2.558959,
+                      "p99_ms": 2.574584,
+                      "mean_ms": 1.8508535625,
+                      "ci95_ms": 0.11734857851868019,
+                      "messages_per_second": 15217.0,
+                      "busy_errors": 518249
+                    }
+                  ]
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "concurrency_sweep": [
+                    {
+                      "in_flight_depth": 1,
+                      "samples": 1000,
+                      "p50_ms": 0.110833,
+                      "p95_ms": 0.157,
+                      "p99_ms": 0.199417,
+                      "mean_ms": 0.116032821,
+                      "ci95_ms": 0.0012153659381612721,
+                      "messages_per_second": 8123.4,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 32,
+                      "samples": 250,
+                      "p50_ms": 1.2588335000000002,
+                      "p95_ms": 1.766666,
+                      "p99_ms": 1.931125,
+                      "mean_ms": 1.232781972,
+                      "ci95_ms": 0.043248592166409264,
+                      "messages_per_second": 24885.2,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 512,
+                      "samples": 64,
+                      "p50_ms": 2.4393965,
+                      "p95_ms": 3.217042,
+                      "p99_ms": 3.285417,
+                      "mean_ms": 2.46301621875,
+                      "ci95_ms": 0.12084038466671183,
+                      "messages_per_second": 12491.0,
+                      "busy_errors": 414179
+                    }
+                  ]
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "concurrency_sweep": [
+                    {
+                      "in_flight_depth": 1,
+                      "samples": 1000,
+                      "p50_ms": 2.004417,
+                      "p95_ms": 2.347208,
+                      "p99_ms": 2.531625,
+                      "mean_ms": 2.028280592,
+                      "ci95_ms": 0.011215680466226426,
+                      "messages_per_second": 488.8,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 32,
+                      "samples": 250,
+                      "p50_ms": 40.1100215,
+                      "p95_ms": 49.492917,
+                      "p99_ms": 51.527125,
+                      "mean_ms": 39.663396132,
+                      "ci95_ms": 0.7320127101307303,
+                      "messages_per_second": 821.4,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 512,
+                      "samples": 64,
+                      "p50_ms": 42.945479,
+                      "p95_ms": 48.87375,
+                      "p99_ms": 49.36825,
+                      "mean_ms": 43.119412796875,
+                      "ci95_ms": 0.8780315763419633,
+                      "messages_per_second": 755.8,
+                      "busy_errors": 277
+                    }
+                  ]
+                }
+              ],
+              "latency": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "samples": 1000,
+                  "p50_ms": 0.101625,
+                  "p95_ms": 0.158708,
+                  "p99_ms": 0.198416,
+                  "mean_ms": 0.11514724,
+                  "ci95_ms": 0.010290371684583638,
+                  "in_flight_depth": 1
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "samples": 1000,
+                  "p50_ms": 0.110833,
+                  "p95_ms": 0.157,
+                  "p99_ms": 0.199417,
+                  "mean_ms": 0.116032821,
+                  "ci95_ms": 0.0012153659381612721,
+                  "in_flight_depth": 1
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "samples": 1000,
+                  "p50_ms": 2.004417,
+                  "p95_ms": 2.347208,
+                  "p99_ms": 2.531625,
+                  "mean_ms": 2.028280592,
+                  "ci95_ms": 0.011215680466226426,
+                  "in_flight_depth": 1
+                }
+              ],
+              "throughput": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "duration_seconds": 5.0,
+                  "roundtrips": 161097,
+                  "messages_per_second": 32219.4,
+                  "in_flight_depth": 32
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "duration_seconds": 5.0,
+                  "roundtrips": 124426,
+                  "messages_per_second": 24885.2,
+                  "in_flight_depth": 32
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "duration_seconds": 5.0,
+                  "roundtrips": 4107,
+                  "messages_per_second": 821.4,
+                  "in_flight_depth": 32
+                }
+              ]
+            },
+            {
+              "transport": "uds",
+              "in_flight_depths": [
+                1,
+                32,
+                512
+              ],
+              "payload_results": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "concurrency_sweep": [
+                    {
+                      "in_flight_depth": 1,
+                      "samples": 1000,
+                      "p50_ms": 0.1171665,
+                      "p95_ms": 0.157,
+                      "p99_ms": 0.224584,
+                      "mean_ms": 0.130686757,
+                      "ci95_ms": 0.014694016284618559,
+                      "messages_per_second": 8529.4,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 32,
+                      "samples": 250,
+                      "p50_ms": 0.801625,
+                      "p95_ms": 1.178459,
+                      "p99_ms": 1.2855,
+                      "mean_ms": 0.7959871359999999,
+                      "ci95_ms": 0.027333663027156254,
+                      "messages_per_second": 43266.6,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 512,
+                      "samples": 64,
+                      "p50_ms": 1.45075,
+                      "p95_ms": 1.939083,
+                      "p99_ms": 1.949833,
+                      "mean_ms": 1.490389984375,
+                      "ci95_ms": 0.06918409383117344,
+                      "messages_per_second": 17313.6,
+                      "busy_errors": 553658
+                    }
+                  ]
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "concurrency_sweep": [
+                    {
+                      "in_flight_depth": 1,
+                      "samples": 1000,
+                      "p50_ms": 0.2518125,
+                      "p95_ms": 0.32125,
+                      "p99_ms": 0.367708,
+                      "mean_ms": 0.254192678,
+                      "ci95_ms": 0.0027915399376835367,
+                      "messages_per_second": 3648.0,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 32,
+                      "samples": 250,
+                      "p50_ms": 1.880646,
+                      "p95_ms": 3.061833,
+                      "p99_ms": 3.360042,
+                      "mean_ms": 2.0110325000000002,
+                      "ci95_ms": 0.07437140016157455,
+                      "messages_per_second": 17478.4,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 512,
+                      "samples": 64,
+                      "p50_ms": 3.035063,
+                      "p95_ms": 3.946958,
+                      "p99_ms": 3.99125,
+                      "mean_ms": 3.052550765625,
+                      "ci95_ms": 0.1607827771318867,
+                      "messages_per_second": 13042.8,
+                      "busy_errors": 194127
+                    }
+                  ]
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "concurrency_sweep": [
+                    {
+                      "in_flight_depth": 1,
+                      "samples": 1000,
+                      "p50_ms": 18.278979,
+                      "p95_ms": 19.475792,
+                      "p99_ms": 21.237625,
+                      "mean_ms": 18.09790951,
+                      "ci95_ms": 0.07307728345633771,
+                      "messages_per_second": 55.6,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 32,
+                      "samples": 250,
+                      "p50_ms": 171.1369585,
+                      "p95_ms": 485.443833,
+                      "p99_ms": 531.762292,
+                      "mean_ms": 205.517942972,
+                      "ci95_ms": 11.866565684787805,
+                      "messages_per_second": 180.0,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 512,
+                      "samples": 64,
+                      "p50_ms": 674.9381455,
+                      "p95_ms": 770.042666,
+                      "p99_ms": 770.3865,
+                      "mean_ms": 584.15100853125,
+                      "ci95_ms": 47.922148430129326,
+                      "messages_per_second": 11.6,
+                      "busy_errors": 1763
+                    }
+                  ]
+                }
+              ],
+              "latency": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "samples": 1000,
+                  "p50_ms": 0.1171665,
+                  "p95_ms": 0.157,
+                  "p99_ms": 0.224584,
+                  "mean_ms": 0.130686757,
+                  "ci95_ms": 0.014694016284618559,
+                  "in_flight_depth": 1
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "samples": 1000,
+                  "p50_ms": 0.2518125,
+                  "p95_ms": 0.32125,
+                  "p99_ms": 0.367708,
+                  "mean_ms": 0.254192678,
+                  "ci95_ms": 0.0027915399376835367,
+                  "in_flight_depth": 1
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "samples": 1000,
+                  "p50_ms": 18.278979,
+                  "p95_ms": 19.475792,
+                  "p99_ms": 21.237625,
+                  "mean_ms": 18.09790951,
+                  "ci95_ms": 0.07307728345633771,
+                  "in_flight_depth": 1
+                }
+              ],
+              "throughput": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "duration_seconds": 5.0,
+                  "roundtrips": 216333,
+                  "messages_per_second": 43266.6,
+                  "in_flight_depth": 32
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "duration_seconds": 5.0,
+                  "roundtrips": 87392,
+                  "messages_per_second": 17478.4,
+                  "in_flight_depth": 32
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "duration_seconds": 5.0,
+                  "roundtrips": 900,
+                  "messages_per_second": 180.0,
+                  "in_flight_depth": 32
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "benchmark": "elixir-bridge-transport-microbench",
+          "transport_results": [
+            {
+              "transport": "tcp",
+              "in_flight_depths": [
+                1,
+                32,
+                512
+              ],
+              "payload_results": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "concurrency_sweep": [
+                    {
+                      "in_flight_depth": 1,
+                      "samples": 1000,
+                      "p50_ms": 0.105,
+                      "p95_ms": 0.153458,
+                      "p99_ms": 0.182666,
+                      "mean_ms": 0.117083544,
+                      "ci95_ms": 0.009839331641812481,
+                      "messages_per_second": 8863.6,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 32,
+                      "samples": 250,
+                      "p50_ms": 0.860813,
+                      "p95_ms": 1.146417,
+                      "p99_ms": 1.224708,
+                      "mean_ms": 0.849102676,
+                      "ci95_ms": 0.02557726875212925,
+                      "messages_per_second": 32767.0,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 512,
+                      "samples": 64,
+                      "p50_ms": 1.649,
+                      "p95_ms": 2.320666,
+                      "p99_ms": 2.349167,
+                      "mean_ms": 1.67647725,
+                      "ci95_ms": 0.099444430543472,
+                      "messages_per_second": 15268.8,
+                      "busy_errors": 520331
+                    }
+                  ]
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "concurrency_sweep": [
+                    {
+                      "in_flight_depth": 1,
+                      "samples": 1000,
+                      "p50_ms": 0.114458,
+                      "p95_ms": 0.161709,
+                      "p99_ms": 0.19425,
+                      "mean_ms": 0.12103266600000001,
+                      "ci95_ms": 0.0013222016062120164,
+                      "messages_per_second": 8005.0,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 32,
+                      "samples": 250,
+                      "p50_ms": 1.2683125,
+                      "p95_ms": 1.78925,
+                      "p99_ms": 1.947542,
+                      "mean_ms": 1.253424648,
+                      "ci95_ms": 0.04002141101066711,
+                      "messages_per_second": 25213.6,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 512,
+                      "samples": 64,
+                      "p50_ms": 2.3083745,
+                      "p95_ms": 2.979625,
+                      "p99_ms": 2.987125,
+                      "mean_ms": 2.318718765625,
+                      "ci95_ms": 0.10718249245112502,
+                      "messages_per_second": 12748.2,
+                      "busy_errors": 417822
+                    }
+                  ]
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "concurrency_sweep": [
+                    {
+                      "in_flight_depth": 1,
+                      "samples": 1000,
+                      "p50_ms": 1.968125,
+                      "p95_ms": 2.281125,
+                      "p99_ms": 2.396417,
+                      "mean_ms": 1.992433264,
+                      "ci95_ms": 0.010181173004728346,
+                      "messages_per_second": 493.6,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 32,
+                      "samples": 250,
+                      "p50_ms": 41.4284795,
+                      "p95_ms": 51.106792,
+                      "p99_ms": 52.530917,
+                      "mean_ms": 41.070585187999995,
+                      "ci95_ms": 0.7224496095443872,
+                      "messages_per_second": 818.2,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 512,
+                      "samples": 64,
+                      "p50_ms": 43.0292085,
+                      "p95_ms": 47.868959,
+                      "p99_ms": 48.398625,
+                      "mean_ms": 42.871110640625,
+                      "ci95_ms": 0.8093061199831825,
+                      "messages_per_second": 761.4,
+                      "busy_errors": 3713
+                    }
+                  ]
+                }
+              ],
+              "latency": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "samples": 1000,
+                  "p50_ms": 0.105,
+                  "p95_ms": 0.153458,
+                  "p99_ms": 0.182666,
+                  "mean_ms": 0.117083544,
+                  "ci95_ms": 0.009839331641812481,
+                  "in_flight_depth": 1
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "samples": 1000,
+                  "p50_ms": 0.114458,
+                  "p95_ms": 0.161709,
+                  "p99_ms": 0.19425,
+                  "mean_ms": 0.12103266600000001,
+                  "ci95_ms": 0.0013222016062120164,
+                  "in_flight_depth": 1
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "samples": 1000,
+                  "p50_ms": 1.968125,
+                  "p95_ms": 2.281125,
+                  "p99_ms": 2.396417,
+                  "mean_ms": 1.992433264,
+                  "ci95_ms": 0.010181173004728346,
+                  "in_flight_depth": 1
+                }
+              ],
+              "throughput": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "duration_seconds": 5.0,
+                  "roundtrips": 163835,
+                  "messages_per_second": 32767.0,
+                  "in_flight_depth": 32
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "duration_seconds": 5.0,
+                  "roundtrips": 126068,
+                  "messages_per_second": 25213.6,
+                  "in_flight_depth": 32
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "duration_seconds": 5.0,
+                  "roundtrips": 4091,
+                  "messages_per_second": 818.2,
+                  "in_flight_depth": 32
+                }
+              ]
+            },
+            {
+              "transport": "uds",
+              "in_flight_depths": [
+                1,
+                32,
+                512
+              ],
+              "payload_results": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "concurrency_sweep": [
+                    {
+                      "in_flight_depth": 1,
+                      "samples": 1000,
+                      "p50_ms": 0.1114165,
+                      "p95_ms": 0.147208,
+                      "p99_ms": 0.179458,
+                      "mean_ms": 0.128765408,
+                      "ci95_ms": 0.025607210620564057,
+                      "messages_per_second": 8557.2,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 32,
+                      "samples": 250,
+                      "p50_ms": 0.8258125000000001,
+                      "p95_ms": 1.190625,
+                      "p99_ms": 1.319042,
+                      "mean_ms": 0.81815614,
+                      "ci95_ms": 0.02878967650243617,
+                      "messages_per_second": 42001.0,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 512,
+                      "samples": 64,
+                      "p50_ms": 1.4753335,
+                      "p95_ms": 1.969,
+                      "p99_ms": 1.9925,
+                      "mean_ms": 1.522478484375,
+                      "ci95_ms": 0.06783551151375883,
+                      "messages_per_second": 16424.6,
+                      "busy_errors": 528141
+                    }
+                  ]
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "concurrency_sweep": [
+                    {
+                      "in_flight_depth": 1,
+                      "samples": 1000,
+                      "p50_ms": 0.2121455,
+                      "p95_ms": 0.276875,
+                      "p99_ms": 0.31975,
+                      "mean_ms": 0.210970501,
+                      "ci95_ms": 0.002312336282012443,
+                      "messages_per_second": 5462.6,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 32,
+                      "samples": 250,
+                      "p50_ms": 1.9362914999999998,
+                      "p95_ms": 2.48125,
+                      "p99_ms": 2.641042,
+                      "mean_ms": 1.884357124,
+                      "ci95_ms": 0.052196358992869125,
+                      "messages_per_second": 16929.8,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 512,
+                      "samples": 64,
+                      "p50_ms": 3.0137915,
+                      "p95_ms": 4.006417,
+                      "p99_ms": 4.116916,
+                      "mean_ms": 3.00913475,
+                      "ci95_ms": 0.17143616032321873,
+                      "messages_per_second": 12680.6,
+                      "busy_errors": 188045
+                    }
+                  ]
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "concurrency_sweep": [
+                    {
+                      "in_flight_depth": 1,
+                      "samples": 1000,
+                      "p50_ms": 10.512624500000001,
+                      "p95_ms": 11.295083,
+                      "p99_ms": 11.733,
+                      "mean_ms": 10.552035,
+                      "ci95_ms": 0.030776778550051773,
+                      "messages_per_second": 94.6,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 32,
+                      "samples": 250,
+                      "p50_ms": 170.191458,
+                      "p95_ms": 491.100791,
+                      "p99_ms": 536.833042,
+                      "mean_ms": 206.397872356,
+                      "ci95_ms": 12.075332801124313,
+                      "messages_per_second": 177.6,
+                      "busy_errors": 0
+                    },
+                    {
+                      "in_flight_depth": 512,
+                      "samples": 64,
+                      "p50_ms": 669.1386665,
+                      "p95_ms": 764.933041,
+                      "p99_ms": 765.333292,
+                      "mean_ms": 580.28772065625,
+                      "ci95_ms": 47.25015182855013,
+                      "messages_per_second": 11.4,
+                      "busy_errors": 1702
+                    }
+                  ]
+                }
+              ],
+              "latency": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "samples": 1000,
+                  "p50_ms": 0.1114165,
+                  "p95_ms": 0.147208,
+                  "p99_ms": 0.179458,
+                  "mean_ms": 0.128765408,
+                  "ci95_ms": 0.025607210620564057,
+                  "in_flight_depth": 1
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "samples": 1000,
+                  "p50_ms": 0.2121455,
+                  "p95_ms": 0.276875,
+                  "p99_ms": 0.31975,
+                  "mean_ms": 0.210970501,
+                  "ci95_ms": 0.002312336282012443,
+                  "in_flight_depth": 1
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "samples": 1000,
+                  "p50_ms": 10.512624500000001,
+                  "p95_ms": 11.295083,
+                  "p99_ms": 11.733,
+                  "mean_ms": 10.552035,
+                  "ci95_ms": 0.030776778550051773,
+                  "in_flight_depth": 1
+                }
+              ],
+              "throughput": [
+                {
+                  "payload_label": "small",
+                  "target_payload_bytes": 512,
+                  "duration_seconds": 5.0,
+                  "roundtrips": 210005,
+                  "messages_per_second": 42001.0,
+                  "in_flight_depth": 32
+                },
+                {
+                  "payload_label": "medium",
+                  "target_payload_bytes": 10240,
+                  "duration_seconds": 5.0,
+                  "roundtrips": 84649,
+                  "messages_per_second": 16929.8,
+                  "in_flight_depth": 32
+                },
+                {
+                  "payload_label": "large",
+                  "target_payload_bytes": 1048576,
+                  "duration_seconds": 5.0,
+                  "roundtrips": 888,
+                  "messages_per_second": 177.6,
+                  "in_flight_depth": 32
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "summary": {
+        "tcp": {
+          "small_p50_ms": {
+            "median": 0.105,
+            "mean": 0.105007,
+            "stddev": 0.0033855054275543552,
+            "p95": 0.10839599999999999,
+            "p99": 0.10839599999999999,
+            "ci95": 0.003831060041085234,
+            "min": 0.101625,
+            "max": 0.10839599999999999
+          },
+          "small_p99_ms": {
+            "median": 0.193708,
+            "mean": 0.19159666666666667,
+            "stddev": 0.008084486460705679,
+            "p95": 0.198416,
+            "p99": 0.198416,
+            "ci95": 0.009148457651322684,
+            "min": 0.182666,
+            "max": 0.198416
+          },
+          "small_messages_per_second": {
+            "median": 32226.4,
+            "mean": 32404.266666666666,
+            "stddev": 314.15577876800677,
+            "p95": 32767.0,
+            "p99": 32767.0,
+            "ci95": 355.500729940803,
+            "min": 32219.4,
+            "max": 32767.0
+          }
+        },
+        "uds": {
+          "small_p50_ms": {
+            "median": 0.1114165,
+            "mean": 0.11329166666666668,
+            "stddev": 0.0033562814368484285,
+            "p95": 0.1171665,
+            "p99": 0.1171665,
+            "ci95": 0.0037979899824395454,
+            "min": 0.111292,
+            "max": 0.1171665
+          },
+          "small_p99_ms": {
+            "median": 0.179458,
+            "mean": 0.18995833333333334,
+            "stddev": 0.030750817067735504,
+            "p95": 0.224584,
+            "p99": 0.224584,
+            "ci95": 0.03479782532324174,
+            "min": 0.165833,
+            "max": 0.224584
+          },
+          "small_messages_per_second": {
+            "median": 42961.0,
+            "mean": 42742.86666666667,
+            "stddev": 660.3956793720963,
+            "p95": 43266.6,
+            "p99": 43266.6,
+            "ci95": 747.3080615840054,
+            "min": 42001.0,
+            "max": 43266.6
+          }
+        }
+      }
+    },
+    "python_bridge_reference": {
+      "benchmark": "pyre-bridge-multi-transport",
+      "transport_results": [
+        {
+          "transport": "tcp",
+          "latency": [
+            {
+              "payload_label": "small",
+              "target_payload_bytes": 512,
+              "samples": 1000,
+              "p50_ms": 0.082708,
+              "p95_ms": 0.160208,
+              "p99_ms": 0.198375,
+              "mean_ms": 0.097699049,
+              "min_ms": 0.0715,
+              "max_ms": 0.311209
+            },
+            {
+              "payload_label": "medium",
+              "target_payload_bytes": 10240,
+              "samples": 1000,
+              "p50_ms": 0.095917,
+              "p95_ms": 0.125292,
+              "p99_ms": 0.1705,
+              "mean_ms": 0.098551533,
+              "min_ms": 0.08,
+              "max_ms": 0.266708
+            },
+            {
+              "payload_label": "large",
+              "target_payload_bytes": 1048576,
+              "samples": 1000,
+              "p50_ms": 1.991791,
+              "p95_ms": 2.450083,
+              "p99_ms": 2.632291,
+              "mean_ms": 2.031291538,
+              "min_ms": 1.674667,
+              "max_ms": 2.940541
+            }
+          ],
+          "throughput": [
+            {
+              "payload_label": "small",
+              "target_payload_bytes": 512,
+              "duration_seconds": 5.0,
+              "roundtrips": 55832,
+              "messages_per_second": 11166.4
+            },
+            {
+              "payload_label": "medium",
+              "target_payload_bytes": 10240,
+              "duration_seconds": 5.0,
+              "roundtrips": 48001,
+              "messages_per_second": 9600.2
+            },
+            {
+              "payload_label": "large",
+              "target_payload_bytes": 1048576,
+              "duration_seconds": 5.0,
+              "roundtrips": 1960,
+              "messages_per_second": 392.0
+            }
+          ]
+        },
+        {
+          "transport": "uds",
+          "latency": [
+            {
+              "payload_label": "small",
+              "target_payload_bytes": 512,
+              "samples": 1000,
+              "p50_ms": 0.109458,
+              "p95_ms": 0.87375,
+              "p99_ms": 1.541041,
+              "mean_ms": 0.234336845,
+              "min_ms": 0.057334,
+              "max_ms": 3.140167
+            },
+            {
+              "payload_label": "medium",
+              "target_payload_bytes": 10240,
+              "samples": 1000,
+              "p50_ms": 0.119125,
+              "p95_ms": 0.193,
+              "p99_ms": 0.266875,
+              "mean_ms": 0.13184316000000001,
+              "min_ms": 0.111166,
+              "max_ms": 0.570333
+            },
+            {
+              "payload_label": "large",
+              "target_payload_bytes": 1048576,
+              "samples": 1000,
+              "p50_ms": 7.739459,
+              "p95_ms": 8.857666,
+              "p99_ms": 9.388958,
+              "mean_ms": 7.896070171,
+              "min_ms": 7.1385,
+              "max_ms": 28.388625
+            }
+          ],
+          "throughput": [
+            {
+              "payload_label": "small",
+              "target_payload_bytes": 512,
+              "duration_seconds": 5.0,
+              "roundtrips": 72371,
+              "messages_per_second": 14474.2
+            },
+            {
+              "payload_label": "medium",
+              "target_payload_bytes": 10240,
+              "duration_seconds": 5.0,
+              "roundtrips": 38063,
+              "messages_per_second": 7612.6
+            },
+            {
+              "payload_label": "large",
+              "target_payload_bytes": 1048576,
+              "duration_seconds": 5.0,
+              "roundtrips": 604,
+              "messages_per_second": 120.8
+            }
+          ]
+        }
+      ]
+    },
+    "bridge_stress": {
+      "benchmark": "elixir-bridge-stress",
+      "transport": "uds",
+      "config": {
+        "in_flight_depths": [
+          1,
+          8,
+          32,
+          128,
+          512
+        ],
+        "duration_seconds": 2.0,
+        "payload_bytes": 512,
+        "pool_size": 8,
+        "max_in_flight_per_conn": 64,
+        "enable_backpressure": true
+      },
+      "results": [
+        {
+          "in_flight_depth": 1,
+          "messages_per_second": 9269.0,
+          "p99_ms": 4.26425,
+          "p50_ms": 0.1204995,
+          "p95_ms": 1.046917,
+          "pool_backpressure_events": 0,
+          "server_backpressure_events": 0,
+          "roundtrips": 18538,
+          "duration_seconds": 2.0,
+          "max_in_flight_observed": 1
+        },
+        {
+          "in_flight_depth": 8,
+          "messages_per_second": 35605.0,
+          "p99_ms": 0.318708,
+          "p50_ms": 0.2022505,
+          "p95_ms": 0.252125,
+          "pool_backpressure_events": 0,
+          "server_backpressure_events": 0,
+          "roundtrips": 71210,
+          "duration_seconds": 2.0,
+          "max_in_flight_observed": 8
+        },
+        {
+          "in_flight_depth": 32,
+          "messages_per_second": 42348.5,
+          "p99_ms": 1.154334,
+          "p50_ms": 0.741708,
+          "p95_ms": 1.080583,
+          "pool_backpressure_events": 0,
+          "server_backpressure_events": 0,
+          "roundtrips": 84697,
+          "duration_seconds": 2.0,
+          "max_in_flight_observed": 32
+        },
+        {
+          "in_flight_depth": 128,
+          "messages_per_second": 41639.5,
+          "p99_ms": 1.623584,
+          "p50_ms": 1.0898545,
+          "p95_ms": 1.611209,
+          "pool_backpressure_events": 1,
+          "server_backpressure_events": 1,
+          "roundtrips": 83279,
+          "duration_seconds": 2.0,
+          "max_in_flight_observed": 128
+        },
+        {
+          "in_flight_depth": 512,
+          "messages_per_second": 16885.0,
+          "p99_ms": 1.95675,
+          "p50_ms": 1.4436455000000001,
+          "p95_ms": 1.951875,
+          "pool_backpressure_events": 214574,
+          "server_backpressure_events": 214574,
+          "roundtrips": 33770,
+          "duration_seconds": 2.0,
+          "max_in_flight_observed": 512
+        }
+      ],
+      "summary": {
+        "best_messages_per_second": 42348.5,
+        "p99_at_max_depth_ms": 1.95675,
+        "avg_p99_ms": 1.8635251999999998
+      }
+    },
+    "memory_scaling": {
+      "python": {
+        "feasible": true,
+        "runs": [
+          {
+            "agents": 100,
+            "rss_bytes": 2002468864
+          },
+          {
+            "agents": 1000,
+            "rss_bytes": 2002468864
+          },
+          {
+            "agents": 5000,
+            "rss_bytes": 2002468864
+          }
+        ],
+        "fit": {
+          "bytes_per_agent": 0.0,
+          "base_bytes": 2002468864.0
+        },
+        "base_runtime_bytes_estimate": 2002468864.0
+      },
+      "elixir_bridge": {
+        "feasible": true,
+        "runs": [
+          {
+            "agents": 100,
+            "baseline_rss_bytes": 131170304,
+            "rss_bytes": 131317760,
+            "delta_bytes": 147456
+          },
+          {
+            "agents": 1000,
+            "baseline_rss_bytes": 134201344,
+            "rss_bytes": 138297344,
+            "delta_bytes": 4096000
+          },
+          {
+            "agents": 5000,
+            "baseline_rss_bytes": 133365760,
+            "rss_bytes": 149929984,
+            "delta_bytes": 16564224
+          }
+        ],
+        "fit": {
+          "bytes_per_agent": 3279.4891915727585,
+          "base_bytes": 267598.64380205795
+        },
+        "base_runtime_bytes_estimate": 133365760.0,
+        "absolute_base_runtime_bytes": 133365760.0,
+        "idle_beam_rss_bytes": 56229888.0,
+        "bridge_over_idle_beam_bytes": 77135872.0
+      }
+    },
+    "failure_recovery": {
+      "restart_attempts": 15,
+      "restarted_successes": 15,
+      "restart_success_ratio": 1.0,
+      "mean_recovery_ms": 12.577708333265036,
+      "strategy_checks": {
+        "rest_for_one_older_survives": true,
+        "rest_for_one_crashed_restarted": true,
+        "rest_for_one_younger_restarted": true
+      }
+    },
+    "scheduler_fairness": {
+      "evaluation_mode": "serial_python_worker",
+      "baseline": {
+        "median": 0.004875,
+        "mean": 0.005931608333333334,
+        "stddev": 0.005893262398913778,
+        "p95": 0.006459,
+        "p99": 0.044625,
+        "ci95": 0.0010544384327061476,
+        "min": 0.004542,
+        "max": 0.053833
+      },
+      "under_cpu_load": {
+        "median": 0.003,
+        "mean": 0.00323252,
+        "stddev": 0.0014046055737386841,
+        "p95": 0.003458,
+        "p99": 0.005167,
+        "ci95": 0.00027530269245278207,
+        "min": 0.002875,
+        "max": 0.016875
+      },
+      "python_no_preemption_blocking_factor_p99": 97.07292926803919,
+      "pooled_workers_blocking_factor_p99": 0.35672,
+      "no_preemption_timer_drift": {
+        "mode": "serial_python_worker",
+        "period_ms": 5.0,
+        "samples": 600,
+        "blocked_threshold_ms": 10.0,
+        "baseline_drift_ms": {
+          "median": 0.6951664882944896,
+          "mean": 0.7172054849797859,
+          "stddev": 0.3571863256381277,
+          "p95": 0.8028749772347509,
+          "p99": 2.424749986967072,
+          "ci95": 0.028580858536491525,
+          "min": 0.08845798321999598,
+          "max": 4.866375010460615
+        },
+        "under_cpu_load_drift_ms": {
+          "median": 0.6886874954216181,
+          "mean": 6.988537916671096,
+          "stddev": 37.84018403167441,
+          "p95": 1.7101670138072222,
+          "p99": 235.3775839775335,
+          "ci95": 3.0278453265867333,
+          "min": 0.07554199430160213,
+          "max": 235.42216601083055
+        },
+        "blocking_factor_p99": 97.07292926803919,
+        "blocked_tick_ratio": 0.028333333333333332
+      },
+      "modes": {
+        "serial_python_worker": {
+          "mode": "serial_python_worker",
+          "handler_worker_count": 1,
+          "baseline": {
+            "median": 0.004875,
+            "mean": 0.005931608333333334,
+            "stddev": 0.005893262398913778,
+            "p95": 0.006459,
+            "p99": 0.044625,
+            "ci95": 0.0010544384327061476,
+            "min": 0.004542,
+            "max": 0.053833
+          },
+          "under_cpu_load": {
+            "median": 0.003,
+            "mean": 0.00323252,
+            "stddev": 0.0014046055737386841,
+            "p95": 0.003458,
+            "p99": 0.005167,
+            "ci95": 0.00027530269245278207,
+            "min": 0.002875,
+            "max": 0.016875
+          },
+          "blocking_factor_p99": 0.11578711484593837,
+          "queue_depth_percentiles": {
+            "p50": 1.0,
+            "p95": 1.0,
+            "p99": 1.0
+          },
+          "restart_latency_percentiles_ms": {
+            "p50": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        },
+        "pooled_workers": {
+          "mode": "pooled_workers",
+          "handler_worker_count": 64,
+          "baseline": {
+            "median": 0.002917,
+            "mean": 0.0035266666666666667,
+            "stddev": 0.0028916864299165608,
+            "p95": 0.0055,
+            "p99": 0.0125,
+            "ci95": 0.0005173883497196481,
+            "min": 0.002833,
+            "max": 0.031458
+          },
+          "under_cpu_load": {
+            "median": 0.003,
+            "mean": 0.00317964,
+            "stddev": 0.0012876109466368286,
+            "p95": 0.003542,
+            "p99": 0.004459,
+            "ci95": 0.0002523717455408184,
+            "min": 0.002875,
+            "max": 0.01575
+          },
+          "blocking_factor_p99": 0.35672,
+          "queue_depth_percentiles": {
+            "p50": 1.0,
+            "p95": 1.0,
+            "p99": 1.0
+          },
+          "restart_latency_percentiles_ms": {
+            "p50": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      },
+      "queue_depth_percentiles": {
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "restart_latency_percentiles_ms": {
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      }
+    },
+    "startup_overhead": {
+      "runs": [
+        {
+          "boot_ms": 708.7855,
+          "first_ping_ms": 0.38325
+        },
+        {
+          "boot_ms": 691.51625,
+          "first_ping_ms": 0.409
+        },
+        {
+          "boot_ms": 701.233416,
+          "first_ping_ms": 0.366625
+        },
+        {
+          "boot_ms": 693.251958,
+          "first_ping_ms": 0.375917
+        },
+        {
+          "boot_ms": 749.807625,
+          "first_ping_ms": 0.385708
+        },
+        {
+          "boot_ms": 688.066791,
+          "first_ping_ms": 0.516666
+        }
+      ],
+      "boot_ms": {
+        "median": 697.2426869999999,
+        "mean": 705.44359,
+        "stddev": 22.98530557910871,
+        "p95": 749.807625,
+        "p99": 749.807625,
+        "ci95": 18.392074948582824,
+        "min": 688.066791,
+        "max": 749.807625
+      },
+      "first_ping_ms": {
+        "median": 0.384479,
+        "mean": 0.4061943333333333,
+        "stddev": 0.05592931653673827,
+        "p95": 0.516666,
+        "p99": 0.516666,
+        "ci95": 0.0447527738113539,
+        "min": 0.366625,
+        "max": 0.516666
+      }
+    },
+    "architectural_evidence": {
+      "python_api_surface": {
+        "runtime": true,
+        "agent": true,
+        "readme": true
+      },
+      "state_and_serialization": {
+        "base_model_enforced": true,
+        "bridge_codec_tests": true,
+        "bridge_protocol_tests": true
+      },
+      "observability": {
+        "bridge_health_api": true,
+        "bridge_health_tests": true
+      }
+    }
+  }
+}
