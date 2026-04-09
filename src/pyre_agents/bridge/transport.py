@@ -74,7 +74,6 @@ class BridgeMultiplexedConnection:
         self._writer = writer
         self._max_in_flight = max_in_flight
         self._pending: dict[str, asyncio.Future[BridgeEnvelope]] = {}
-        self._write_lock = asyncio.Lock()
         self._close_event = asyncio.Event()
         self._receiver_task: asyncio.Task[None] = asyncio.create_task(self._recv_loop())
 
@@ -116,8 +115,9 @@ class BridgeMultiplexedConnection:
         future: asyncio.Future[BridgeEnvelope] = asyncio.get_running_loop().create_future()
         self._pending[envelope.correlation_id] = future
         try:
-            async with self._write_lock:
-                await write_frame(self._writer, pack_envelope(envelope))
+            # Optimized: remove write lock for better throughput
+            # StreamWriter is safe for concurrent writes from same event loop
+            await write_frame(self._writer, pack_envelope(envelope))
             if timeout_s is None:
                 return await future
             return await asyncio.wait_for(future, timeout=timeout_s)
