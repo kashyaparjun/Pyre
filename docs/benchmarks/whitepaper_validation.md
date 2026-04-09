@@ -1,6 +1,6 @@
 # Whitepaper Claim Validation Report
 
-Generated: 2026-03-19T00:03:18.696662+00:00
+Generated: 2026-04-09T09:37:07.006197+00:00
 Profile: `quick`
 Claim scope: `all`
 Publication ready: `False`
@@ -34,10 +34,10 @@ Publication ready: `False`
 | --- | --- | --- | --- | --- |
 | E1 | empirical | insufficient_evidence | not_applicable | required transport 'uds' not measured |
 | E2 | empirical | insufficient_evidence | not_applicable | required transport 'uds' not measured |
-| E3 | empirical | partially_validated | provisional_quick | boot_median=675.7ms |
+| E3 | empirical | partially_validated | provisional_quick | boot_median=606.0ms |
 | E4 | empirical | validated | meets_gate | ratio=1.000 checks=3/3 |
-| E5 | empirical | partially_validated | provisional_quick | base=140.73MB delta_vs_idle_beam=72.43MB slope=3.56KB/agent |
-| E6 | empirical | validated | meets_gate | blocking_factor=45.26 blocked_tick_ratio=0.028 |
+| E5 | empirical | partially_validated | provisional_quick | base=127.03MB delta_vs_idle_beam=73.06MB slope=3.22KB/agent |
+| E6 | empirical | validated | meets_gate | blocking_factor=103.31 blocked_tick_ratio=0.027 |
 | A1 | architectural | validated | meets_gate | api evidence 3/3 |
 | A2 | architectural | validated | meets_gate | serialization evidence 3/3 |
 | A3 | architectural | validated | meets_gate | observability evidence 2/2 |
@@ -54,12 +54,12 @@ Publication ready: `False`
 
 ## Raw Artifacts
 
-- `bridge_suite`: `docs/benchmarks/raw/whitepaper_validation/quick_20260319T000318Z/bridge_suite.json`
-- `python_bridge_reference`: `docs/benchmarks/raw/whitepaper_validation/quick_20260319T000318Z/python_bridge_reference.json`
-- `bridge_stress`: `docs/benchmarks/raw/whitepaper_validation/quick_20260319T000318Z/bridge_stress.json`
-- `memory_scaling`: `docs/benchmarks/raw/whitepaper_validation/quick_20260319T000318Z/memory_scaling.json`
-- `failure_recovery`: `docs/benchmarks/raw/whitepaper_validation/quick_20260319T000318Z/failure_recovery.json`
-- `scheduler_fairness`: `docs/benchmarks/raw/whitepaper_validation/quick_20260319T000318Z/scheduler_fairness.json`
-- `startup_overhead`: `docs/benchmarks/raw/whitepaper_validation/quick_20260319T000318Z/startup_overhead.json`
-- `architectural_evidence`: `docs/benchmarks/raw/whitepaper_validation/quick_20260319T000318Z/architectural_evidence.json`
+- `bridge_suite`: `docs/benchmarks/raw/whitepaper_validation/quick_20260409T093707Z/bridge_suite.json`
+- `python_bridge_reference`: `docs/benchmarks/raw/whitepaper_validation/quick_20260409T093707Z/python_bridge_reference.json`
+- `bridge_stress`: `docs/benchmarks/raw/whitepaper_validation/quick_20260409T093707Z/bridge_stress.json`
+- `memory_scaling`: `docs/benchmarks/raw/whitepaper_validation/quick_20260409T093707Z/memory_scaling.json`
+- `failure_recovery`: `docs/benchmarks/raw/whitepaper_validation/quick_20260409T093707Z/failure_recovery.json`
+- `scheduler_fairness`: `docs/benchmarks/raw/whitepaper_validation/quick_20260409T093707Z/scheduler_fairness.json`
+- `startup_overhead`: `docs/benchmarks/raw/whitepaper_validation/quick_20260409T093707Z/startup_overhead.json`
+- `architectural_evidence`: `docs/benchmarks/raw/whitepaper_validation/quick_20260409T093707Z/architectural_evidence.json`
 

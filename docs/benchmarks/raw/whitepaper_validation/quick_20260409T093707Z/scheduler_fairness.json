@@ -1,0 +1,135 @@
+{
+  "evaluation_mode": "serial_python_worker",
+  "baseline": {
+    "median": 0.003,
+    "mean": 0.003406525,
+    "stddev": 0.0030190273100005926,
+    "p95": 0.003375,
+    "p99": 0.009458,
+    "ci95": 0.0005401725240744123,
+    "min": 0.002875,
+    "max": 0.035166
+  },
+  "under_cpu_load": {
+    "median": 0.003041,
+    "mean": 0.0032587500000000004,
+    "stddev": 0.0013854337276233619,
+    "p95": 0.003625,
+    "p99": 0.005167,
+    "ci95": 0.00027154501061417896,
+    "min": 0.002916,
+    "max": 0.016666
+  },
+  "python_no_preemption_blocking_factor_p99": 103.30790036155508,
+  "pooled_workers_blocking_factor_p99": 0.30045070422535214,
+  "no_preemption_timer_drift": {
+    "mode": "serial_python_worker",
+    "period_ms": 5.0,
+    "samples": 600,
+    "blocked_threshold_ms": 10.0,
+    "baseline_drift_ms": {
+      "median": 0.6960624933708458,
+      "mean": 0.727049374982016,
+      "stddev": 0.32886809269499956,
+      "p95": 1.0543750005308539,
+      "p99": 2.2772499988786876,
+      "ci95": 0.026314927979645582,
+      "min": 0.06216599023900916,
+      "max": 3.493000001180917
+    },
+    "under_cpu_load_drift_ms": {
+      "median": 0.6960420042742043,
+      "mean": 6.9872391666770755,
+      "stddev": 37.81715978352045,
+      "p95": 1.6883749968837947,
+      "p99": 235.2579159825109,
+      "ci95": 3.0260030030369114,
+      "min": 0.10029197903349985,
+      "max": 235.3271249786485
+    },
+    "blocking_factor_p99": 103.30790036155508,
+    "blocked_tick_ratio": 0.02666666666666667
+  },
+  "modes": {
+    "serial_python_worker": {
+      "mode": "serial_python_worker",
+      "handler_worker_count": 1,
+      "baseline": {
+        "median": 0.003,
+        "mean": 0.003406525,
+        "stddev": 0.0030190273100005926,
+        "p95": 0.003375,
+        "p99": 0.009458,
+        "ci95": 0.0005401725240744123,
+        "min": 0.002875,
+        "max": 0.035166
+      },
+      "under_cpu_load": {
+        "median": 0.003041,
+        "mean": 0.0032587500000000004,
+        "stddev": 0.0013854337276233619,
+        "p95": 0.003625,
+        "p99": 0.005167,
+        "ci95": 0.00027154501061417896,
+        "min": 0.002916,
+        "max": 0.016666
+      },
+      "blocking_factor_p99": 0.546310002114612,
+      "queue_depth_percentiles": {
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "restart_latency_percentiles_ms": {
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      }
+    },
+    "pooled_workers": {
+      "mode": "pooled_workers",
+      "handler_worker_count": 64,
+      "baseline": {
+        "median": 0.003,
+        "mean": 0.0037301500000000002,
+        "stddev": 0.0034853902754596803,
+        "p95": 0.005833,
+        "p99": 0.01775,
+        "ci95": 0.0006236154460222811,
+        "min": 0.002875,
+        "max": 0.035375
+      },
+      "under_cpu_load": {
+        "median": 0.003084,
+        "mean": 0.00329335,
+        "stddev": 0.001126389569430227,
+        "p95": 0.003667,
+        "p99": 0.005333,
+        "ci95": 0.0002207723556083245,
+        "min": 0.002958,
+        "max": 0.014041
+      },
+      "blocking_factor_p99": 0.30045070422535214,
+      "queue_depth_percentiles": {
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0
+      },
+      "restart_latency_percentiles_ms": {
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      }
+    }
+  },
+  "queue_depth_percentiles": {
+    "p50": 1.0,
+    "p95": 1.0,
+    "p99": 1.0
+  },
+  "restart_latency_percentiles_ms": {
+    "p50": 0.0,
+    "p95": 0.0,
+    "p99": 0.0
+  }
+}

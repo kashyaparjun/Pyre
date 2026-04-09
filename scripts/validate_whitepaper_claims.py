@@ -153,6 +153,20 @@ class CpuBoundAgent(Agent[CpuBoundState]):
 
 
 def profile_config(name: str) -> ProfileConfig:
+    if name == "fast":
+        # Optimized for autoresearch - minimal but statistically valid
+        return ProfileConfig(
+            name="fast",
+            warmup_runs=1,
+            measured_runs=3,
+            bridge_iterations=400,
+            bridge_throughput_seconds=1.0,
+            ab_agents=50,
+            ab_workers=10,
+            ab_attempts=3000,
+            memory_counts=[100, 1000],
+            startup_runs=4,
+        )
     if name == "rigorous":
         return ProfileConfig(
             name="rigorous",
