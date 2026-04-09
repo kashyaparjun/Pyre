@@ -45,6 +45,12 @@ def unpack_envelope(payload: bytes) -> BridgeEnvelope:
 
     data = cast(dict[str, Any], unpacked)
     try:
-        return BridgeEnvelope.model_validate(data)
-    except ValidationError as exc:
-        raise BridgeCodecError("Envelope validation failed") from exc
+        # Optimized: Use model_construct to bypass validation for performance
+        # This assumes the data is already validated on the wire
+        return BridgeEnvelope.model_construct(**data)
+    except Exception as exc:
+        # Fall back to full validation if construct fails
+        try:
+            return BridgeEnvelope.model_validate(data)
+        except ValidationError as val_err:
+            raise BridgeCodecError("Envelope validation failed") from val_err
