@@ -83,7 +83,6 @@ class BridgeEnvelope(BaseModel):
 
     def to_wire_dict(self) -> dict[str, Any]:
         """Convert envelope to a bridge-safe dictionary."""
-        # Optimized: exclude_none reduces payload size and serialization time
-        payload = self.model_dump(mode="python", exclude_none=True)
+        payload = self.model_dump(mode="python")
         payload["type"] = self.type.value
         return payload
