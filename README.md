@@ -12,8 +12,6 @@ Run 10,000 stateful agents on a single machine. Each agent is an isolated BEAM p
 - Phase 4 (packaging + release workflow): complete
 - Current focus: Phase 5 (advanced features)
 
-See [PROJECT_STATUS.md](PROJECT_STATUS.md) for milestone details and verification snapshots.
-
 ## Why Pyre
 
 Stateful agents at scale. A Python process costs 10-50MB. A Pyre agent costs ~2.9KB. That's the difference between a cluster and a laptop.
@@ -159,9 +157,8 @@ uv run python scripts/package_smoke.py
 - Packaging and release notes: `docs/packaging/phase4.md`
 - Bridge contract: `docs/contracts/bridge_python_elixir_contract.md`
 - Benchmark notes: `docs/benchmarks/phase1.md`
-- Project plan: `pyre-project-plan.md`
-- Technical architecture: `pyre-technical-document.md`
-- Whitepaper: `pyre-whitepaper.md`
+- Technical architecture: `TECHNICAL_DOCUMENT.md`
+- Whitepaper: `WHITEPAPER.md`
 
 ## Repository map
 
