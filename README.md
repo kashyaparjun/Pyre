@@ -2,7 +2,7 @@
 
 Write Python. Think in processes.
 
-Run 10,000 stateful agents on a single machine. Each agent is an isolated BEAM process (~2.9KB), supervised by OTP, with automatic crash recovery. Your logic stays in Python.
+Run 10,000 stateful agents on a single machine. Each agent is an isolated BEAM process (~3.4KB), supervised by OTP, with automatic crash recovery. Your logic stays in Python.
 
 ## Status
 
@@ -28,9 +28,9 @@ Stateful agents at scale. A Python process costs 10-50MB. A Pyre agent costs ~2.
 | Python multiprocessing | 10-50MB | ✓ | Manual |
 | Python threading | 1-8MB | ✗ (GIL) | Manual |
 | Python asyncio | ~KB | ✗ (shared heap) | Manual |
-| Pyre (BEAM process) | ~2.9KB | ✓ | Built-in |
+| Pyre (BEAM process) | ~3.4KB | ✓ | Built-in |
 
-Bridge overhead: 0.1-0.3ms per message. Negligible for LLM workloads (500-5000ms).
+Validated performance: 43,123 messages/sec throughput, 0.11ms median latency (p99: 0.20ms).
 
 ## What is implemented
 
