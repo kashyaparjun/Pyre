@@ -3,8 +3,6 @@
 
 import asyncio
 import json
-import subprocess
-import sys
 from pathlib import Path
 
 # Variants to test

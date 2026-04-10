@@ -1,9 +1,9 @@
 # Whitepaper Claim Validation Report
 
-Generated: 2026-04-09T19:51:54.793574+00:00
+Generated: 2026-04-10T15:59:48.808022+00:00
 Profile: `rigorous`
 Claim scope: `all`
-Publication ready: `False`
+Publication ready: `True`
 
 ## Environment
 
@@ -19,12 +19,10 @@ Publication ready: `False`
   - `architectural`: 3
   - `future/distributed`: 4
 - By status:
-  - `not_validated`: 1
-  - `partially_validated`: 1
-  - `validated`: 7
+  - `validated`: 9
   - `unsupported_in_scope`: 4
 - Transport concurrency profile: `{'in_flight_depths': [1, 8, 32, 128, 512], 'duration_seconds': 2.0, 'payload_bytes': 512, 'pool_size': 8, 'max_in_flight_per_conn': 64, 'enable_backpressure': True}`
-- Backpressure events: `{'pool': 96987, 'server': 96987}`
+- Backpressure events: `{'pool': 222301, 'server': 222301}`
 - Queue depth percentiles: `{'p50': 1.0, 'p95': 1.0, 'p99': 1.0}`
 - Restart latency percentiles: `{'p50': 0.0, 'p95': 0.0, 'p99': 0.0}`
 
@@ -32,12 +30,12 @@ Publication ready: `False`
 
 | Claim | Class | Status | Gate | Detail |
 | --- | --- | --- | --- | --- |
-| E1 | empirical | not_validated | not_applicable | p50=0.2203ms p99=16.1388ms |
-| E2 | empirical | partially_validated | meets_gate | median_mps=16955.7 |
-| E3 | empirical | validated | meets_gate | boot_median=623.9ms |
+| E1 | empirical | validated | meets_gate | p50=0.0805ms p99=0.1701ms |
+| E2 | empirical | validated | meets_gate | median_mps=43122.7 |
+| E3 | empirical | validated | meets_gate | boot_median=572.6ms |
 | E4 | empirical | validated | meets_gate | ratio=1.000 checks=3/3 |
-| E5 | empirical | validated | meets_gate | base=128.72MB delta_vs_idle_beam=73.95MB slope=3.53KB/agent |
-| E6 | empirical | validated | meets_gate | blocking_factor=163.00 blocked_tick_ratio=0.027 |
+| E5 | empirical | validated | meets_gate | base=126.66MB delta_vs_idle_beam=72.70MB slope=3.39KB/agent |
+| E6 | empirical | validated | meets_gate | blocking_factor=218.98 blocked_tick_ratio=0.027 |
 | A1 | architectural | validated | meets_gate | api evidence 3/3 |
 | A2 | architectural | validated | meets_gate | serialization evidence 3/3 |
 | A3 | architectural | validated | meets_gate | observability evidence 2/2 |
@@ -54,12 +52,12 @@ Publication ready: `False`
 
 ## Raw Artifacts
 
-- `bridge_suite`: `docs/benchmarks/raw/whitepaper_validation/rigorous_20260409T195154Z/bridge_suite.json`
-- `python_bridge_reference`: `docs/benchmarks/raw/whitepaper_validation/rigorous_20260409T195154Z/python_bridge_reference.json`
-- `bridge_stress`: `docs/benchmarks/raw/whitepaper_validation/rigorous_20260409T195154Z/bridge_stress.json`
-- `memory_scaling`: `docs/benchmarks/raw/whitepaper_validation/rigorous_20260409T195154Z/memory_scaling.json`
-- `failure_recovery`: `docs/benchmarks/raw/whitepaper_validation/rigorous_20260409T195154Z/failure_recovery.json`
-- `scheduler_fairness`: `docs/benchmarks/raw/whitepaper_validation/rigorous_20260409T195154Z/scheduler_fairness.json`
-- `startup_overhead`: `docs/benchmarks/raw/whitepaper_validation/rigorous_20260409T195154Z/startup_overhead.json`
-- `architectural_evidence`: `docs/benchmarks/raw/whitepaper_validation/rigorous_20260409T195154Z/architectural_evidence.json`
+- `bridge_suite`: `docs/benchmarks/raw/whitepaper_validation/rigorous_20260410T155948Z/bridge_suite.json`
+- `python_bridge_reference`: `docs/benchmarks/raw/whitepaper_validation/rigorous_20260410T155948Z/python_bridge_reference.json`
+- `bridge_stress`: `docs/benchmarks/raw/whitepaper_validation/rigorous_20260410T155948Z/bridge_stress.json`
+- `memory_scaling`: `docs/benchmarks/raw/whitepaper_validation/rigorous_20260410T155948Z/memory_scaling.json`
+- `failure_recovery`: `docs/benchmarks/raw/whitepaper_validation/rigorous_20260410T155948Z/failure_recovery.json`
+- `scheduler_fairness`: `docs/benchmarks/raw/whitepaper_validation/rigorous_20260410T155948Z/scheduler_fairness.json`
+- `startup_overhead`: `docs/benchmarks/raw/whitepaper_validation/rigorous_20260410T155948Z/startup_overhead.json`
+- `architectural_evidence`: `docs/benchmarks/raw/whitepaper_validation/rigorous_20260410T155948Z/architectural_evidence.json`
 
