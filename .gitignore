@@ -13,3 +13,4 @@ wheels/
 elixir/**/_build/
 elixir/**/deps/
 elixir/**/.elixir_ls/
+opencode.json
