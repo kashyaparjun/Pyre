@@ -14,7 +14,7 @@ Run 10,000 stateful agents on a single machine. Each agent is an isolated BEAM p
 
 ## Why Pyre
 
-Stateful agents at scale. A Python process costs 10-50MB. A Pyre agent costs ~2.9KB. That's the difference between a cluster and a laptop.
+Stateful agents at scale. A Python process costs 10-50MB. A Pyre agent costs ~3.4KB. That's the difference between a cluster and a laptop.
 
 - **True isolation**: Each agent is a BEAM process with its own heap. No shared mutable state.
 - **Built-in supervision**: Crashed agents restart automatically. No try/except boilerplate.
