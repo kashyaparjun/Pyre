@@ -500,6 +500,6 @@ See `README.md` for complete documentation and examples.
 
 **Pyre** is open source under MIT License.  
 Contributions, feedback, and criticism are welcome at:  
-https://github.com/arjun-kashyap/pyre
+https://github.com/kashyaparjun/pyre
 
 *End of Whitepaper*
