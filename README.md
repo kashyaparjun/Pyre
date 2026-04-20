@@ -2,35 +2,45 @@
 
 Write Python. Think in processes.
 
-Run 10,000 stateful agents on a single machine. Each agent is an isolated BEAM process (~3.4KB), supervised by OTP, with automatic crash recovery. Your logic stays in Python.
-
-## Status
-
-- Phase 1 (Bridge Protocol): complete
-- Phase 2 (Agent Lifecycle): complete
-- Phase 3 (Supervision Trees + bridge health hooks): complete
-- Phase 4 (packaging + release workflow): complete
-- Current focus: Phase 5 (advanced features)
+Pyre gives Python agents the fault-tolerance and supervision semantics of the
+BEAM. One agent's crash can't kill the others. Conversation state survives
+restarts. Your existing pydantic-ai or CrewAI code keeps working — the adapter
+is one line.
 
 ## Why Pyre
 
-Stateful agents at scale. A Python process costs 10-50MB. A Pyre agent costs ~3.4KB. That's the difference between a cluster and a laptop.
+Production agent systems hit three walls Python can't solve cleanly: massive
+concurrency, fault isolation, and automatic recovery. Pyre wraps each agent in
+a supervised BEAM process so:
 
 - **True isolation**: Each agent is a BEAM process with its own heap. No shared mutable state.
 - **Built-in supervision**: Crashed agents restart automatically. No try/except boilerplate.
 - **Preemptive scheduling**: One slow agent can't starve the others.
+- **State survives crashes**: Opt in to `preserve_state_on_restart` and the last-committed state is kept across restarts — conversation history, counters, anything.
 - **Python-first API**: Pydantic state models, async handlers, familiar patterns.
 
 ## Cost model
 
-| Model | Per-agent memory | Isolation | Supervision |
-|-------|------------------|-----------|-------------|
+Per-agent marginal memory (added for each new supervised agent), on top of a
+fixed ~50MB Python interpreter and ~30MB Elixir node base:
+
+| Model | Marginal per-agent memory | Isolation | Supervision |
+|-------|---------------------------|-----------|-------------|
 | Python multiprocessing | 10-50MB | ✓ | Manual |
 | Python threading | 1-8MB | ✗ (GIL) | Manual |
 | Python asyncio | ~KB | ✗ (shared heap) | Manual |
-| Pyre (BEAM process) | ~3.4KB | ✓ | Built-in |
+| Pyre | ~3.8KB BEAM process + ~1-2KB Python handler ≈ ~5KB | ✓ | Built-in |
 
-Validated performance: 43,123 messages/sec throughput, 0.11ms median latency (p99: 0.20ms).
+10,000 active agents is ~80MB of fixed runtime plus ~50MB of per-agent overhead
+— well under a 1GB container. Bridge throughput is ~43k messages/sec per
+connection with 0.11ms median latency (p99: 0.20ms) on the validation rig, so
+the bridge is not the bottleneck for any realistic LLM-bound workload.
+
+## Status
+
+- Phases 1–4 (bridge protocol, agent lifecycle, supervision trees, packaging): complete
+- Adapters for [pydantic-ai](src/pyre_agents/adapters/pydantic_ai.py) and [CrewAI](src/pyre_agents/adapters/crewai.py): complete
+- Current focus: Phase 5 (advanced features, more adapters)
 
 ## What is implemented
 
