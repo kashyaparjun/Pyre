@@ -52,10 +52,17 @@ class BridgeEnvelope(BaseModel):
     @field_validator("correlation_id")
     @classmethod
     def _validate_correlation_id(cls, value: str) -> str:
-        # Optimized: skip expensive UUID validation for performance
-        # Just ensure it's a non-empty string
-        if not value or len(value) < 1:
-            raise ValueError("correlation_id must be a non-empty string")
+        # A full uuid.UUID() parse was measurably expensive on the hot path, so
+        # we use a shape check: 36 chars with hyphens at the UUID offsets and
+        # hex everywhere else. Matches the spec without the parser cost.
+        if len(value) != 36:
+            raise ValueError("correlation_id must be a 36-char UUID string")
+        for i, ch in enumerate(value):
+            if i in (8, 13, 18, 23):
+                if ch != "-":
+                    raise ValueError("correlation_id has misplaced hyphen")
+            elif ch not in "0123456789abcdefABCDEF":
+                raise ValueError("correlation_id has non-hex character")
         return value
 
     @model_validator(mode="after")
