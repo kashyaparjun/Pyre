@@ -134,6 +134,19 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
+## See it in 30 seconds
+
+One file, no external deps, shows the punchline:
+
+```bash
+uv run python examples/without_vs_with_pyre.py
+```
+
+Same scenario — three conversation turns with a tool that crashes on the
+middle one — runs twice: once in raw asyncio (history ends corrupt with a
+dangling user message), once wrapped in Pyre (history stays clean because
+state is only committed after a handler returns).
+
 ## Framework adapters
 
 Pyre ships thin adapters that wrap existing Python agent frameworks so their
