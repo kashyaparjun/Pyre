@@ -39,63 +39,82 @@ the bridge is not the bottleneck for any realistic LLM-bound workload.
 ## Status
 
 - Phases 1–4 (bridge protocol, agent lifecycle, supervision trees, packaging): complete
-- Adapters for [pydantic-ai](src/pyre_agents/adapters/pydantic_ai.py) and [CrewAI](src/pyre_agents/adapters/crewai.py): complete
+- Adapters: [pydantic-ai](src/pyre_agents/adapters/pydantic_ai.py), [CrewAI](src/pyre_agents/adapters/crewai.py), [LangGraph](src/pyre_agents/adapters/langgraph.py)
 - Current focus: Phase 5 (advanced features, more adapters)
-
-## What is implemented
-
-- Python runtime lifecycle:
-  - `Pyre.start()`, `spawn`, `call`, `cast`, `send_after`, `stop`
-- Python supervision trees:
-  - `one_for_one`, `one_for_all`, `rest_for_one`
-  - nested supervisor groups and restart intensity
-- Bridge protocol:
-  - MessagePack envelopes + 4-byte big-endian framing
-  - transport/server integration and negative-path handling
-- Elixir bridge/runtime:
-  - grouped supervisors with restart strategy semantics
-  - cross-runtime spawn/execute/stop behavior
-- Bridge health monitoring:
-  - structured connection/message/error lifecycle events from Python `BridgeServer`
 
 ## Requirements
 
 - Python 3.12+
 - [`uv`](https://github.com/astral-sh/uv)
-- Elixir + Mix (required for Elixir runtime and cross-runtime tests)
+- Elixir + Mix (only required for cross-runtime tests and the Elixir bridge; not needed for the in-process Python runtime or any adapter)
 
-## Quickstart
+## Quickstart: supervise a pydantic-ai agent
 
-Install dependencies:
-
-```bash
-uv sync
-cd elixir/pyre_bridge
-mix deps.get
-```
-
-Run Python checks:
+Install the extra:
 
 ```bash
-uv run ruff check .
-uv run mypy .
-uv run pytest -q
+uv add 'pyre-agents[pydantic-ai]'
 ```
 
-Run Elixir checks:
+Wrap your existing agent in one line:
+
+```python
+import asyncio
+from pydantic_ai import Agent as PydanticAgent
+from pyre_agents import Pyre
+from pyre_agents.adapters.pydantic_ai import supervise
+
+
+async def main() -> None:
+    pyd_agent = PydanticAgent("openai:gpt-4o", system_prompt="be brief")
+    system = await Pyre.start()
+    try:
+        chat = await supervise(pyd_agent, system=system, name="chat")
+        print(await chat.run("hi"))
+        print(await chat.run("what did I just say?"))  # history threaded automatically
+    finally:
+        await system.stop_system()
+
+
+asyncio.run(main())
+```
+
+CrewAI and LangGraph have the same shape — see [Framework adapters](#framework-adapters) below.
+
+## See it in 30 seconds
+
+One file, no external deps, shows the punchline:
 
 ```bash
-(cd elixir/pyre_bridge && mix test)
+uv run python examples/without_vs_with_pyre.py
 ```
 
-Run CLI:
+Same scenario — three conversation turns with a tool that crashes on the
+middle one — runs twice: once in raw asyncio (history ends corrupt with a
+dangling user message), once wrapped in Pyre (history stays clean because
+state is only committed after a handler returns).
+
+## Framework adapters
+
+Pyre ships thin adapters that wrap existing Python agent frameworks so their
+runs survive crashes without rewriting any agent code.
+
+- **pydantic-ai** (`pyre-agents[pydantic-ai]`) — `pyre_agents.adapters.pydantic_ai.supervise(agent, system=..., name=...)` returns a supervised handle whose `.run(prompt)` threads `message_history` through a Pyre process. Crashes that escape pydantic-ai's own error handling trigger a restart that keeps the last-committed history intact.
+- **CrewAI** (`pyre-agents[crewai]`) — `pyre_agents.adapters.crewai.supervise(crew_factory, system=..., name=...)` returns a supervised handle whose `.kickoff(inputs)` runs on a fresh `Crew` instance from the factory. One crew's crash cannot take down another supervised crew. Sync `kickoff()` is offloaded to a thread so concurrency is real.
+- **LangGraph** (`pyre-agents[langgraph]`) — `pyre_agents.adapters.langgraph.supervise(graph_factory, system=..., name=...)` returns a supervised handle whose `.invoke(input, config=...)` runs a fresh compiled graph on each call. LangGraph already has durable execution via Checkpointer; the adapter adds **isolation between concurrent graph runs** on top of that.
+
+Runnable crash-recovery demos:
 
 ```bash
-uv run pyre-agents --version
-uv run pyre-agents demo
+uv run --with 'pydantic-ai>=1.0' python examples/pydantic_ai_resilient.py
+uv run python examples/crewai_resilient.py
+uv run python examples/langgraph_resilient.py
 ```
 
-## Minimal Python runtime example
+## Writing a custom Agent
+
+If you need supervision semantics without an existing framework, subclass
+`Agent` and spawn directly:
 
 ```python
 from pydantic import BaseModel
@@ -126,42 +145,20 @@ async def main() -> None:
         print(await ref.call("increment", {}))  # 3
     finally:
         await system.stop_system()
-
-
-if __name__ == "__main__":
-    import asyncio
-
-    asyncio.run(main())
 ```
 
-## See it in 30 seconds
+Full runtime surface: `Pyre.start`, `spawn` (with `preserve_state_on_restart=True`
+opt-in), `create_supervisor` (`one_for_one`, `one_for_all`, `rest_for_one`,
+nested groups, restart intensity), `call`, `cast`, `send_after`, `stop`.
 
-One file, no external deps, shows the punchline:
-
-```bash
-uv run python examples/without_vs_with_pyre.py
-```
-
-Same scenario — three conversation turns with a tool that crashes on the
-middle one — runs twice: once in raw asyncio (history ends corrupt with a
-dangling user message), once wrapped in Pyre (history stays clean because
-state is only committed after a handler returns).
-
-## Framework adapters
-
-Pyre ships thin adapters that wrap existing Python agent frameworks so their
-runs survive crashes without rewriting any agent code.
-
-- **pydantic-ai** (`pyre-agents[pydantic-ai]`) — `pyre_agents.adapters.pydantic_ai.supervise(agent, system=..., name=...)` returns a supervised handle whose `.run(prompt)` threads `message_history` through a Pyre process. Crashes that escape pydantic-ai's own error handling trigger a restart that keeps the last-committed history intact.
-- **CrewAI** (`pyre-agents[crewai]`) — `pyre_agents.adapters.crewai.supervise(crew_factory, system=..., name=...)` returns a supervised handle whose `.kickoff(inputs)` runs on a fresh `Crew` instance from the factory. One crew's crash cannot take down another supervised crew. Sync `kickoff()` is offloaded to a thread so concurrency is real.
-- **LangGraph** (`pyre-agents[langgraph]`) — `pyre_agents.adapters.langgraph.supervise(graph_factory, system=..., name=...)` returns a supervised handle whose `.invoke(input, config=...)` runs a fresh compiled graph on each call. LangGraph already has durable execution via Checkpointer; the adapter adds **isolation between concurrent graph runs** on top of that.
-
-Runnable crash-recovery demos:
+## Development
 
 ```bash
-uv run --with 'pydantic-ai>=1.0' python examples/pydantic_ai_resilient.py
-uv run python examples/crewai_resilient.py
-uv run python examples/langgraph_resilient.py
+uv sync
+uv run ruff check .
+uv run mypy .
+uv run pytest -q
+(cd elixir/pyre_bridge && mix deps.get && mix test)
 ```
 
 ## Cross-runtime integration
