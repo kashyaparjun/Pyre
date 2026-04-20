@@ -30,6 +30,7 @@ dependencies = [
 [project.optional-dependencies]
 pydantic-ai = ["pydantic-ai>=1.0"]
 crewai = ["crewai>=0.70"]
+langgraph = ["langgraph>=0.2"]
 
 [project.scripts]
 pyre-agents = "pyre_agents.cli:main"
