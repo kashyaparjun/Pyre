@@ -27,6 +27,10 @@ dependencies = [
     "svgwrite>=1.4.3",
 ]
 
+[project.optional-dependencies]
+pydantic-ai = ["pydantic-ai>=1.0"]
+crewai = ["crewai>=0.70"]
+
 [project.scripts]
 pyre-agents = "pyre_agents.cli:main"
 

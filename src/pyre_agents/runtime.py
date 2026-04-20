@@ -28,6 +28,7 @@ class AgentSpec:
     args: dict[str, Any]
     restart_policy: RestartPolicy
     supervisor: str
+    preserve_state_on_restart: bool = False
 
 
 @dataclass(frozen=True)
@@ -161,7 +162,18 @@ class PyreSystem:
         within_ms: int = 5000,
         strategy: RestartStrategy = RestartStrategy.ONE_FOR_ONE,
         supervisor: str | None = None,
+        preserve_state_on_restart: bool = False,
     ) -> AgentRef:
+        """Spawn a managed agent.
+
+        When `preserve_state_on_restart=True`, a restart after a handler crash
+        reuses the last-committed state and does **not** re-invoke `init()`.
+        That is safe because Pyre only assigns `managed.state` after a handler
+        returns, but it means side effects inside `init()` (opening sockets,
+        registering with external services, etc.) will not re-run on restart.
+        Put that kind of setup inside the first `handle_call`/`handle_info`
+        instead, or leave the flag off.
+        """
         if not self._started:
             raise RuntimeError("PyreSystem is not started")
         if name in self._agents:
@@ -190,6 +202,7 @@ class PyreSystem:
                 args=init_args,
                 restart_policy=RestartPolicy(max_restarts=max_restarts, within_ms=within_ms),
                 supervisor=supervisor_name,
+                preserve_state_on_restart=preserve_state_on_restart,
             ),
             agent=agent,
             state=state,
@@ -300,11 +313,14 @@ class PyreSystem:
     async def _restart_agent(self, managed: ManagedAgent) -> None:
         restart_begin = monotonic()
         replacement = type(managed.agent)()
-        state = await replacement.init(**managed.spec.args)
-        if not isinstance(state, BaseModel):
-            raise TypeError("Agent.init must return a Pydantic BaseModel")
-        managed.agent = replacement
-        managed.state = state
+        if managed.spec.preserve_state_on_restart:
+            managed.agent = replacement
+        else:
+            state = await replacement.init(**managed.spec.args)
+            if not isinstance(state, BaseModel):
+                raise TypeError("Agent.init must return a Pydantic BaseModel")
+            managed.agent = replacement
+            managed.state = state
         self._restart_latencies_ms.append((monotonic() - restart_begin) * 1000)
 
     def _restart_targets(self, group: SupervisorGroup, crashed_name: str) -> list[str]:

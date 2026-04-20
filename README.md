@@ -124,6 +124,21 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
+## Framework adapters
+
+Pyre ships thin adapters that wrap existing Python agent frameworks so their
+runs survive crashes without rewriting any agent code.
+
+- **pydantic-ai** (`pyre-agents[pydantic-ai]`) — `pyre_agents.adapters.pydantic_ai.supervise(agent, system=..., name=...)` returns a supervised handle whose `.run(prompt)` threads `message_history` through a Pyre process. Crashes that escape pydantic-ai's own error handling trigger a restart that keeps the last-committed history intact.
+- **CrewAI** (`pyre-agents[crewai]`) — `pyre_agents.adapters.crewai.supervise(crew_factory, system=..., name=...)` returns a supervised handle whose `.kickoff(inputs)` runs on a fresh `Crew` instance from the factory. One crew's crash cannot take down another supervised crew. Sync `kickoff()` is offloaded to a thread so concurrency is real.
+
+Runnable crash-recovery demos:
+
+```bash
+uv run --with 'pydantic-ai>=1.0' python examples/pydantic_ai_resilient.py
+uv run python examples/crewai_resilient.py
+```
+
 ## Cross-runtime integration
 
 - Python cross-runtime tests are in `tests/test_elixir_python_integration.py`
