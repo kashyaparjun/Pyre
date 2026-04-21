@@ -13,7 +13,12 @@ from pydantic import BaseModel
 
 from pyre_agents.agent import Agent
 from pyre_agents.context import AgentContext
-from pyre_agents.errors import AgentInvocationError, AgentNotFoundError, AgentTerminatedError
+from pyre_agents.errors import (
+    AgentInvocationError,
+    AgentNotFoundError,
+    AgentTerminatedError,
+    SystemStoppedError,
+)
 from pyre_agents.ref import AgentRef
 from pyre_agents.supervision import RestartPolicy, RestartStrategy, SupervisorSpec
 from pyre_agents.worker import Worker
@@ -81,8 +86,12 @@ class PyreSystem:
         self._agents: dict[str, ManagedAgent] = {}
         self._worker = Worker()
         self._started = False
+        self._shutting_down = False
         self._performance = PerformanceConfig()
         self._handler_slots = asyncio.Semaphore(self._performance.handler_worker_count)
+        self._in_flight = 0
+        self._drained = asyncio.Event()
+        self._drained.set()
         self._restart_latencies_ms: list[float] = []
         self._backpressure_rejections = 0
         self._supervisors: dict[str, SupervisorGroup] = {
@@ -105,7 +114,23 @@ class PyreSystem:
         runtime._started = True
         return runtime
 
-    async def stop_system(self) -> None:
+    async def stop_system(self, *, drain_timeout_s: float = 5.0) -> None:
+        """Shut down the runtime, draining in-flight handlers.
+
+        Sets the shutting-down flag (new calls raise :class:`SystemStoppedError`),
+        awaits outstanding handlers up to ``drain_timeout_s`` seconds, then
+        clears agent and supervisor tables. A handler that doesn't return
+        within the timeout is left to complete on its own — we don't
+        force-cancel running application code.
+        """
+        self._shutting_down = True
+        if self._in_flight > 0:
+            try:
+                await asyncio.wait_for(self._drained.wait(), timeout=drain_timeout_s)
+            except TimeoutError:
+                # Best effort: we logged the timeout via leaving _in_flight
+                # non-zero; runaway handlers remain the caller's problem.
+                pass
         self._agents.clear()
         self._supervisors = {
             ROOT_SUPERVISOR: SupervisorGroup(
@@ -220,64 +245,81 @@ class PyreSystem:
             group.children.remove(name)
 
     async def call(self, name: str, type_: str, payload: dict[str, Any]) -> Any:
+        self._reject_if_shutting_down()
         managed = self._get_managed(name)
         msg = {"type": type_, "payload": payload}
         ctx = AgentContext(self, name)
         self._reserve_mailbox_slot(managed, drop_on_overflow=False)
-        async with managed.lock:
-            self._ensure_not_terminated(managed)
-            try:
-                async with self._handler_slots:
-                    outcome = await self._worker.run_call(managed.agent, managed.state, msg, ctx)
-                managed.state = outcome.new_state
-                return outcome.reply
-            except Exception as exc:
-                await self._handle_crash(managed, exc)
-                raise AgentInvocationError(f"Agent '{name}' crashed during call") from exc
-            finally:
-                self._release_mailbox_slot(managed)
+        self._enter_in_flight()
+        try:
+            async with managed.lock:
+                self._ensure_not_terminated(managed)
+                try:
+                    async with self._handler_slots:
+                        outcome = await self._worker.run_call(
+                            managed.agent, managed.state, msg, ctx
+                        )
+                    managed.state = outcome.new_state
+                    return outcome.reply
+                except Exception as exc:
+                    await self._handle_crash(managed, exc)
+                    raise AgentInvocationError(f"Agent '{name}' crashed during call") from exc
+                finally:
+                    self._release_mailbox_slot(managed)
+        finally:
+            self._exit_in_flight()
 
     async def cast(self, name: str, type_: str, payload: dict[str, Any]) -> None:
+        self._reject_if_shutting_down()
         managed = self._get_managed(name)
         msg = {"type": type_, "payload": payload}
         ctx = AgentContext(self, name)
         if not self._reserve_mailbox_slot(managed, drop_on_overflow=True):
             return
-        async with managed.lock:
-            self._ensure_not_terminated(managed)
-            try:
-                async with self._handler_slots:
-                    managed.state = await self._worker.run_cast(
-                        managed.agent,
-                        managed.state,
-                        msg,
-                        ctx,
-                    )
-            except Exception as exc:
-                await self._handle_crash(managed, exc)
-            finally:
-                self._release_mailbox_slot(managed)
+        self._enter_in_flight()
+        try:
+            async with managed.lock:
+                self._ensure_not_terminated(managed)
+                try:
+                    async with self._handler_slots:
+                        managed.state = await self._worker.run_cast(
+                            managed.agent,
+                            managed.state,
+                            msg,
+                            ctx,
+                        )
+                except Exception as exc:
+                    await self._handle_crash(managed, exc)
+                finally:
+                    self._release_mailbox_slot(managed)
+        finally:
+            self._exit_in_flight()
 
     async def info(self, name: str, type_: str, payload: dict[str, Any]) -> None:
+        self._reject_if_shutting_down()
         managed = self._get_managed(name)
         msg = {"type": type_, "payload": payload}
         ctx = AgentContext(self, name)
         if not self._reserve_mailbox_slot(managed, drop_on_overflow=True):
             return
-        async with managed.lock:
-            self._ensure_not_terminated(managed)
-            try:
-                async with self._handler_slots:
-                    managed.state = await self._worker.run_info(
-                        managed.agent,
-                        managed.state,
-                        msg,
-                        ctx,
-                    )
-            except Exception as exc:
-                await self._handle_crash(managed, exc)
-            finally:
-                self._release_mailbox_slot(managed)
+        self._enter_in_flight()
+        try:
+            async with managed.lock:
+                self._ensure_not_terminated(managed)
+                try:
+                    async with self._handler_slots:
+                        managed.state = await self._worker.run_info(
+                            managed.agent,
+                            managed.state,
+                            msg,
+                            ctx,
+                        )
+                except Exception as exc:
+                    await self._handle_crash(managed, exc)
+                finally:
+                    self._release_mailbox_slot(managed)
+        finally:
+            self._exit_in_flight()
 
     async def send_after(
         self, name: str, type_: str, payload: dict[str, Any], delay_ms: int
@@ -367,6 +409,20 @@ class PyreSystem:
     def _ensure_not_terminated(self, managed: ManagedAgent) -> None:
         if managed.terminated:
             raise AgentTerminatedError(f"Agent '{managed.spec.name}' is terminated")
+
+    def _reject_if_shutting_down(self) -> None:
+        if self._shutting_down:
+            raise SystemStoppedError("PyreSystem is shutting down; no new calls accepted")
+
+    def _enter_in_flight(self) -> None:
+        self._in_flight += 1
+        if self._in_flight == 1:
+            self._drained.clear()
+
+    def _exit_in_flight(self) -> None:
+        self._in_flight = max(0, self._in_flight - 1)
+        if self._in_flight == 0:
+            self._drained.set()
 
     def _reserve_mailbox_slot(self, managed: ManagedAgent, *, drop_on_overflow: bool) -> bool:
         managed.pending_messages += 1

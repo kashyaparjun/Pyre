@@ -177,6 +177,7 @@ nested groups, restart intensity), `call`, `cast`, `send_after`, `stop`.
 | `AgentInvocationError` | a handler raised; supervisor restarted the agent | alive, ready for next call |
 | `AgentTerminatedError` | the agent (or its supervisor) exceeded restart intensity | dead; further calls keep raising this |
 | `AgentNotFoundError` | you called on a name that was never spawned or was stopped | — |
+| `SystemStoppedError` | you called after `stop_system` began draining | — |
 
 A typical try/except:
 
@@ -210,12 +211,12 @@ metrics = system.metrics()
 # Push metrics.queue_depth_percentiles["p99"] etc. to your dashboard.
 ```
 
-**Shutdown.** `await system.stop_system()` clears the agent and supervisor
-tables and marks the system stopped. **It does not await in-flight
-handler tasks** — if you have long-running calls outstanding, await them
-(or cancel them) yourself before calling `stop_system`. Always call
-`stop_system` in a `finally` clause so test runs and short-lived scripts
-release state cleanly.
+**Graceful shutdown.** `await system.stop_system(drain_timeout_s=5.0)`
+sets the shutting-down flag (new `call`/`cast`/`info` raise
+`SystemStoppedError`), awaits in-flight handlers up to `drain_timeout_s`,
+then clears tables. Handlers that don't finish inside the timeout are
+left to complete on their own — Pyre will not force-cancel running
+application code. Always call `stop_system` in a `finally` clause.
 
 ## Development
 

@@ -17,3 +17,7 @@ class AgentInvocationError(PyreError):
 
 class AgentTerminatedError(PyreError):
     """Raised when an agent exceeded restart intensity and is terminated."""
+
+
+class SystemStoppedError(PyreError):
+    """Raised when a call is attempted on a runtime that is shutting down."""

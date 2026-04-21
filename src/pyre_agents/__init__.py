@@ -7,6 +7,7 @@ from pyre_agents.errors import (
     AgentNotFoundError,
     AgentTerminatedError,
     PyreError,
+    SystemStoppedError,
 )
 from pyre_agents.ref import AgentRef
 from pyre_agents.results import CallResult
@@ -30,6 +31,7 @@ __all__ = [
     "RestartPolicy",
     "RestartStrategy",
     "SupervisorSpec",
+    "SystemStoppedError",
 ]
 
 __version__ = "0.1.0"
