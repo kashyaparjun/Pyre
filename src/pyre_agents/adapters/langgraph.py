@@ -127,7 +127,7 @@ class SupervisedGraph:
 
 
 async def supervise(
-    graph_factory: Callable[[], CompiledStateGraph],
+    graph_factory: Callable[[], CompiledStateGraph[Any, Any, Any, Any]],
     *,
     system: PyreSystem,
     name: str,
