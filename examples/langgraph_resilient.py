@@ -28,7 +28,11 @@ class TinyGraph:
     fail_first: bool = False
     calls: int = 0
 
-    def invoke(self, input_: dict, config: dict | None = None) -> dict:
+    def invoke(
+        self,
+        input_: dict[str, object],
+        config: dict[str, object] | None = None,
+    ) -> dict[str, object]:
         self.calls += 1
         if self.fail_first:
             self.fail_first = False

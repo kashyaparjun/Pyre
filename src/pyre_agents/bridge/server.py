@@ -13,7 +13,7 @@ from typing import Any, cast
 
 from pyre_agents.bridge.codec import BridgeCodecError, pack_envelope, unpack_envelope
 from pyre_agents.bridge.framing import FrameTooLargeError, read_frame, write_frame
-from pyre_agents.bridge.protocol import BridgeEnvelope, MessageType
+from pyre_agents.bridge.protocol import BridgeEnvelope, BridgeErrorPayload, MessageType
 
 EnvelopeHandler = Callable[[BridgeEnvelope], Awaitable[BridgeEnvelope]]
 HealthHook = Callable[["BridgeHealthEvent"], Awaitable[None] | None]
@@ -141,11 +141,11 @@ class BridgeServer:
                         correlation_id=envelope.correlation_id,
                         type=MessageType.ERROR,
                         agent_id=envelope.agent_id or "bridge",
-                        error={
-                            "type": "busy",
-                            "message": "bridge queue is saturated",
-                            "stack": None,
-                        },
+                        error=BridgeErrorPayload(
+                            type="busy",
+                            message="bridge queue is saturated",
+                            stack=None,
+                        ),
                         queue_depth=self._in_flight,
                         retry_after_ms=self._retry_after_ms,
                         busy_reason="max_in_flight_exceeded",

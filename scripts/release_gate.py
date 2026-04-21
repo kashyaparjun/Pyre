@@ -16,7 +16,11 @@ def main() -> None:
     elixir_root = repo_root / "elixir" / "pyre_bridge"
 
     _run(["uv", "run", "ruff", "check", "."], cwd=repo_root)
-    _run(["uv", "run", "mypy", "."], cwd=repo_root)
+    # Honor the scope configured in pyproject.toml (packages = ["pyre_agents"]).
+    # Running `mypy .` overrides that and pulls scaffolding (scripts/,
+    # examples/pyre_self_benchmark/) into the strict typecheck — those
+    # directories are deliberately not strictly typed.
+    _run(["uv", "run", "mypy"], cwd=repo_root)
     _run(["uv", "run", "pytest", "-q"], cwd=repo_root)
     _run(["mix", "test"], cwd=elixir_root)
     _run(["uv", "build"], cwd=repo_root)

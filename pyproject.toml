@@ -46,6 +46,7 @@ dev = [
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+extend-exclude = [".autoresearch"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]

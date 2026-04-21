@@ -1,7 +1,8 @@
 """Generate architectural diagrams for Pyre whitepaper."""
 
-import svgwrite
 from pathlib import Path
+
+import svgwrite
 
 output_dir = Path("/Users/arjun/Documents/Pyre/docs/diagrams")
 output_dir.mkdir(exist_ok=True)

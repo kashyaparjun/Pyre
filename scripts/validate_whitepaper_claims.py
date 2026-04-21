@@ -220,7 +220,10 @@ def claim_definitions() -> list[ClaimDefinition]:
             metric="bridge.uds.small.messages_per_second",
             threshold="validated if median >= 40000",
             partial_rule="partial if median >= 10000",
-            caveats="UDS source of truth only. Achieved 42,235 mps in rigorous validation on Darwin arm64.",
+            caveats=(
+                "UDS source of truth only. Achieved 42,235 mps in rigorous "
+                "validation on Darwin arm64."
+            ),
             required_profile="rigorous",
             transport_required="uds",
             suite_keys=["bridge_suite"],

@@ -17,9 +17,15 @@ import asyncio
 import sys
 
 try:
-    from pydantic_ai import Agent as PydanticAgent
-    from pydantic_ai.messages import ModelResponse, TextPart
-    from pydantic_ai.models.function import AgentInfo, FunctionModel
+    from pydantic_ai import Agent as PydanticAgent  # type: ignore[import-not-found]
+    from pydantic_ai.messages import (  # type: ignore[import-not-found]
+        ModelResponse,
+        TextPart,
+    )
+    from pydantic_ai.models.function import (  # type: ignore[import-not-found]
+        AgentInfo,
+        FunctionModel,
+    )
 except ImportError:
     print("This example needs pydantic-ai. Install with: pip install 'pydantic-ai>=1.0'")
     sys.exit(1)
@@ -30,7 +36,7 @@ from pyre_agents.adapters.pydantic_ai import supervise
 _calls = {"n": 0}
 
 
-def unstable_model(messages: list, info: AgentInfo) -> ModelResponse:
+def unstable_model(messages: list[object], info: AgentInfo) -> ModelResponse:
     """A stand-in model that crashes on its second invocation."""
     _calls["n"] += 1
     if _calls["n"] == 2:
