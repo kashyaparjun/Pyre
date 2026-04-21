@@ -59,7 +59,13 @@ def _smoke_metadata_snippet() -> str:
     return """
 from importlib.metadata import version
 
-assert version("pyre-agents") == "0.1.0"
+import pyre_agents
+
+installed = version("pyre-agents")
+assert installed == pyre_agents.__version__, (
+    f"installed metadata version {installed!r} does not match "
+    f"pyre_agents.__version__ {pyre_agents.__version__!r}"
+)
 """
 
 
