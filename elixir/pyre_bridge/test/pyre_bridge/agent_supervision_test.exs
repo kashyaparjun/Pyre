@@ -1,6 +1,11 @@
 defmodule PyreBridge.AgentSupervisionTest do
   use ExUnit.Case, async: false
 
+  # Supervision tests deliberately crash agents to exercise restart semantics;
+  # GenServer logs those crashes at :error level. Capture them so the test
+  # output stays readable instead of flooding the terminal with expected noise.
+  @moduletag capture_log: true
+
   alias PyreBridge.AgentServer
   alias PyreBridge.AgentSupervisor
   alias PyreBridge.TestSupport.CounterHandler

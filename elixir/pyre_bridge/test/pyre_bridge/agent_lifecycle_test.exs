@@ -1,6 +1,10 @@
 defmodule PyreBridge.AgentLifecycleTest do
   use ExUnit.Case, async: false
 
+  # Some cases deliberately crash the handler to verify lifecycle semantics;
+  # silence the expected :error logs to keep the output readable.
+  @moduletag capture_log: true
+
   alias PyreBridge.AgentServer
   alias PyreBridge.AgentSupervisor
   alias PyreBridge.TestSupport.CounterHandler

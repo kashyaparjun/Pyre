@@ -3,22 +3,6 @@ defmodule PyreBridge.Codec do
   MessagePack codec helpers for bridge payloads.
   """
 
-  alias PyreBridge.Envelope
-
-  @allowed_keys [
-    "correlation_id",
-    "type",
-    "agent_id",
-    "handler",
-    "state",
-    "message",
-    "reply",
-    "error",
-    "queue_depth",
-    "retry_after_ms",
-    "busy_reason"
-  ]
-
   @spec pack_payload(term()) :: {:ok, binary()} | {:error, term()}
   def pack_payload(payload) do
     Msgpax.pack(payload)
