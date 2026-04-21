@@ -1,6 +1,13 @@
 """A multi-perspective research assistant built on Pyre + pydantic-ai.
 
-Run with:  uv run --with 'pydantic-ai>=1.0' python examples/research_assistant.py
+Default (deterministic — no API key needed):
+    uv run --with 'pydantic-ai>=1.0' python examples/research_assistant.py
+
+Live (real provider — set OPENAI_API_KEY or swap --model):
+    uv run --with 'pydantic-ai>=1.0' python examples/research_assistant.py --live
+    uv run --with 'pydantic-ai>=1.0' python examples/research_assistant.py \\
+        --live --model 'openai:gpt-4o-mini' \\
+        --topic 'How should we evaluate vector databases for a 10M-doc corpus?'
 
 This is Pyre eating its own dog food. It's the kind of product an agent
 developer actually ships: a user poses a topic, three perspective agents
@@ -12,23 +19,26 @@ What makes it non-trivial:
       ``pyre_agents.adapters.pydantic_ai.supervise``.
     - The perspective agents run concurrently — they're independent, so
       there is no reason to wait for one before starting the next.
-    - The "risk" agent has a flaky dependency that raises on its first
-      invocation. Without Pyre, that exception would kill the run and the
-      two other perspectives' work would be wasted. With Pyre, the crash
-      is isolated to the risk agent's supervised process, Pyre restarts
-      it, conversation history is preserved (we did a prior "warm up"
-      turn), and a retry succeeds.
+    - In the default (deterministic) mode the "risk" agent has a flaky
+      dependency that raises on its first invocation. Without Pyre, that
+      exception would kill the run and the two other perspectives' work
+      would be wasted. With Pyre, the crash is isolated to the risk
+      agent's supervised process, Pyre restarts it, conversation history
+      is preserved (we did a prior "warm up" turn), and a retry succeeds.
     - The synthesizer then runs with all three outputs.
 
-The agents are backed by pydantic-ai's ``FunctionModel`` so the demo runs
-deterministically without any API key. Swap a real model in
-``build_agent`` — ``PydanticAgent("openai:gpt-4o", ...)`` — to run with
-a real provider; the rest of the code is unchanged.
+In ``--live`` mode the perspective agents talk to a real LLM, so there is
+no synthetic crash to trigger (the supervision path still protects you
+against real provider failures — you just can't watch one happen on
+demand). Use the default mode when you want to see the crash-recovery
+story; use ``--live`` when you want to see real LLM output.
 """
 
 from __future__ import annotations
 
+import argparse
 import asyncio
+import os
 import sys
 
 try:
@@ -92,8 +102,36 @@ def _make_model(role: str) -> FunctionModel:
     return FunctionModel(fn)
 
 
-def build_agent(role: str) -> PydanticAgent[None, str]:
-    """Return a pydantic-ai Agent for a given role. Swap the model to go live."""
+_LIVE_INSTRUCTIONS = {
+    "technical": (
+        "You are the technical perspective. Evaluate the topic on its "
+        "engineering merits. One paragraph, no preamble."
+    ),
+    "business": (
+        "You are the business perspective. Evaluate the topic in terms of "
+        "commercial value and operational cost. One paragraph, no preamble."
+    ),
+    "risk": (
+        "You are the risk perspective. Flag what could go wrong in adoption, "
+        "operations, or organizational fit. One paragraph, no preamble."
+    ),
+    "synthesizer": (
+        "Combine the given perspectives into a single actionable "
+        "recommendation. Keep it to two sentences."
+    ),
+}
+
+
+def build_agent(role: str, *, live: bool, live_model: str) -> PydanticAgent[None, str]:
+    """Return a pydantic-ai Agent for a given role.
+
+    With `live=False` (default), backs the Agent with a deterministic
+    FunctionModel so the example runs without any API key. With `live=True`,
+    uses the real provider named by `live_model` (e.g. ``"openai:gpt-4o"``)
+    and requires the corresponding API key in the environment.
+    """
+    if live:
+        return PydanticAgent(live_model, system_prompt=_LIVE_INSTRUCTIONS[role])
     return PydanticAgent(_make_model(role), system_prompt=f"You are the {role} perspective.")
 
 
@@ -115,16 +153,69 @@ async def _perspective(agent: SupervisedPydanticAIAgent, topic: str) -> tuple[st
     return agent.name, str(answer)
 
 
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--live",
+        action="store_true",
+        help=(
+            "Use a real LLM provider instead of the deterministic FunctionModel. "
+            "Requires OPENAI_API_KEY (or equivalent for the chosen --model)."
+        ),
+    )
+    parser.add_argument(
+        "--model",
+        default="openai:gpt-4o-mini",
+        help="pydantic-ai model identifier for --live (default: openai:gpt-4o-mini).",
+    )
+    parser.add_argument(
+        "--topic",
+        default="Does Pyre make sense for a team running 200 concurrent LLM agents?",
+        help="Topic for the perspective agents to analyze.",
+    )
+    return parser.parse_args()
+
+
+def _check_live_credentials(model: str) -> None:
+    if model.startswith("openai:") and not os.environ.get("OPENAI_API_KEY"):
+        print(
+            "error: --live needs OPENAI_API_KEY set (or pass --model to a provider "
+            "whose key is configured).",
+            file=sys.stderr,
+        )
+        sys.exit(2)
+
+
 async def main() -> None:
-    topic = "Does Pyre make sense for a team running 200 concurrent LLM agents?"
+    args = _parse_args()
+    if args.live:
+        _check_live_credentials(args.model)
+        print(f"Running in LIVE mode against {args.model}.\n")
+    topic = args.topic
 
     system = await Pyre.start()
     try:
         # Wrap each pydantic-ai agent once. One-liner per adapter call.
-        technical = await supervise(build_agent("technical"), system=system, name="technical")
-        business = await supervise(build_agent("business"), system=system, name="business")
-        risk = await supervise(build_agent("risk"), system=system, name="risk")
-        synthesizer = await supervise(build_agent("synthesizer"), system=system, name="synth")
+        technical = await supervise(
+            build_agent("technical", live=args.live, live_model=args.model),
+            system=system,
+            name="technical",
+        )
+        business = await supervise(
+            build_agent("business", live=args.live, live_model=args.model),
+            system=system,
+            name="business",
+        )
+        risk = await supervise(
+            build_agent("risk", live=args.live, live_model=args.model),
+            system=system,
+            name="risk",
+        )
+        synthesizer = await supervise(
+            build_agent("synthesizer", live=args.live, live_model=args.model),
+            system=system,
+            name="synth",
+        )
 
         # Warm-up turn threads a message into each perspective agent's history
         # so the preserve_state_on_restart promise has a visible payoff when

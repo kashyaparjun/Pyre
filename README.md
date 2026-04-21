@@ -19,6 +19,55 @@ a supervised BEAM process so:
 - **State survives crashes**: Opt in to `preserve_state_on_restart` and the last-committed state is kept across restarts — conversation history, counters, anything.
 - **Python-first API**: Pydantic state models, async handlers, familiar patterns.
 
+## Architecture
+
+Your application code runs in a normal Python process. Each Pyre agent is
+a small state-plus-handler bundle living inside that process,
+coordinated by an asyncio-based supervisor. Crashes inside a handler
+bubble through Pyre's supervision tree (restart per policy, preserve
+last-committed state if you asked) rather than through your call stack.
+
+```mermaid
+flowchart LR
+    subgraph User["Your Python application"]
+      code["async def main()"]
+    end
+    subgraph Pyre["Pyre runtime (asyncio, in-process)"]
+      sup["SupervisorGroup<br/>(one_for_one / one_for_all / rest_for_one)"]
+      agent1["ManagedAgent A<br/>state + handler"]
+      agent2["ManagedAgent B<br/>state + handler"]
+      agent3["ManagedAgent C<br/>state + handler"]
+      sup --> agent1
+      sup --> agent2
+      sup --> agent3
+    end
+    subgraph Adapters["Framework adapters (optional)"]
+      pa["pydantic-ai Agent"]
+      crew["CrewAI Crew"]
+      lg["LangGraph CompiledStateGraph"]
+      oa["OpenAI Agents SDK Agent"]
+    end
+    subgraph BEAM["Elixir / BEAM bridge (optional)"]
+      bridge["Unix-domain-socket bridge<br/>MessagePack envelopes"]
+      beam["OTP supervision tree"]
+    end
+
+    code --> sup
+    agent1 -. wraps .-> pa
+    agent2 -. wraps .-> crew
+    agent3 -. wraps .-> lg
+    agent3 -. wraps .-> oa
+    Pyre -. cross-runtime calls .-> bridge
+    bridge --> beam
+```
+
+For most users, the Elixir/BEAM bridge is an optional component; the
+in-process Python runtime alone delivers preemptive-style fair
+scheduling, supervision, and crash recovery. Cross-runtime calls are
+opt-in — they're what unlocks the validated `~3.8KB` BEAM-side process
+footprint for very-high-concurrency deployments, but a single-process
+Python deployment works as-is.
+
 ## Cost model
 
 Per-agent marginal memory (added for each new supervised agent), on top of a
@@ -105,11 +154,15 @@ crashed agent with its conversation history intact, and the workflow
 completes.
 
 ```bash
+# Deterministic — no API key needed, fixed crash-and-recover scenario:
 uv run --with 'pydantic-ai>=1.0' python examples/research_assistant.py
+
+# Live against a real model (requires OPENAI_API_KEY):
+uv run --with 'pydantic-ai>=1.0' python examples/research_assistant.py --live
 ```
 
-Deterministic `FunctionModel` out of the box; swap to `"openai:gpt-4o"` or
-any real model for live runs.
+`--model` picks the pydantic-ai provider string (default
+`openai:gpt-4o-mini`); `--topic` customizes the prompt.
 
 ## Framework adapters
 
@@ -119,6 +172,7 @@ runs survive crashes without rewriting any agent code.
 - **pydantic-ai** (`pyre-agents[pydantic-ai]`) — `pyre_agents.adapters.pydantic_ai.supervise(agent, system=..., name=...)` returns a supervised handle whose `.run(prompt)` threads `message_history` through a Pyre process. Crashes that escape pydantic-ai's own error handling trigger a restart that keeps the last-committed history intact.
 - **CrewAI** (`pyre-agents[crewai]`) — `pyre_agents.adapters.crewai.supervise(crew_factory, system=..., name=...)` returns a supervised handle whose `.kickoff(inputs)` runs on a fresh `Crew` instance from the factory. One crew's crash cannot take down another supervised crew. Sync `kickoff()` is offloaded to a thread so concurrency is real.
 - **LangGraph** (`pyre-agents[langgraph]`) — `pyre_agents.adapters.langgraph.supervise(graph_factory, system=..., name=...)` returns a supervised handle whose `.invoke(input, config=...)` runs a fresh compiled graph on each call. LangGraph already has durable execution via Checkpointer; the adapter adds **isolation between concurrent graph runs** on top of that.
+- **OpenAI Agents SDK** (`pyre-agents[openai-agents]`) — `pyre_agents.adapters.openai_agents.supervise(agent, system=..., name=...)` returns a supervised handle whose `.run(input)` flows through `Runner.run` with message history threaded automatically. Crashes that escape the SDK's error handlers trigger a restart with the last-committed input-list intact.
 
 Runnable crash-recovery demos:
 
@@ -126,6 +180,7 @@ Runnable crash-recovery demos:
 uv run --with 'pydantic-ai>=1.0' python examples/pydantic_ai_resilient.py
 uv run python examples/crewai_resilient.py
 uv run python examples/langgraph_resilient.py
+uv run --with 'openai-agents>=0.2' python examples/openai_agents_resilient.py
 ```
 
 ## Writing a custom Agent

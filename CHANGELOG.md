@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-(nothing yet)
+- `pyre_agents.adapters.openai_agents.supervise()` — fourth framework adapter, wraps an `openai-agents` `Agent` so `Runner.run()` calls flow through a Pyre supervised process with automatic history threading via `to_input_list()`. `preserve_state_on_restart` keeps the last-committed input list intact across crashes.
+- `pyre-agents[openai-agents]` optional-deps extra.
+- `examples/openai_agents_resilient.py` — runnable demo using a real `openai-agents.Agent` with a stub `Runner` that simulates a transient 503 on turn 2. Swap the stub for the real Runner (one-line change) to go live against OpenAI.
 
 ## 0.2.0 - 2026-04-21
 
