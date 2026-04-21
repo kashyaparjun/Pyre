@@ -94,6 +94,23 @@ middle one — runs twice: once in raw asyncio (history ends corrupt with a
 dangling user message), once wrapped in Pyre (history stays clean because
 state is only committed after a handler returns).
 
+## A realistic multi-agent product
+
+`examples/research_assistant.py` is a full multi-agent workflow built on
+Pyre + the pydantic-ai adapter — three perspective agents (technical,
+business, risk) running concurrently, a synthesizer combining their
+outputs, and one agent whose provider deliberately crashes mid-run. Pyre
+isolates the failure, preserves the surviving agents' work, restarts the
+crashed agent with its conversation history intact, and the workflow
+completes.
+
+```bash
+uv run --with 'pydantic-ai>=1.0' python examples/research_assistant.py
+```
+
+Deterministic `FunctionModel` out of the box; swap to `"openai:gpt-4o"` or
+any real model for live runs.
+
 ## Framework adapters
 
 Pyre ships thin adapters that wrap existing Python agent frameworks so their

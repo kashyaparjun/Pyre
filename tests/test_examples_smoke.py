@@ -60,3 +60,16 @@ def test_pydantic_ai_resilient_preserves_history_across_crash() -> None:
     assert "turn 2 crashed as expected" in stdout
     assert "turn 3:" in stdout
     assert "history=4" in stdout
+
+
+def test_research_assistant_recovers_and_synthesizes() -> None:
+    pytest.importorskip("pydantic_ai", reason="pydantic-ai extra not installed")
+    stdout = _run(EXAMPLES / "research_assistant.py", timeout=60.0)
+    assert "[risk] crashed" in stdout
+    assert "Pyre restarted the bridge. retrying..." in stdout
+    assert "history length = 4" in stdout
+    assert "Synthesis:" in stdout
+    # All three perspective outputs land in the synthesis step.
+    assert "[technical]" in stdout
+    assert "[business]" in stdout
+    assert "[risk]" in stdout

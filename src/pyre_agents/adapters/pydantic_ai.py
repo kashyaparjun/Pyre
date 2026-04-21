@@ -31,7 +31,11 @@ from pyre_agents.ref import AgentRef
 from pyre_agents.results import CallResult
 
 if TYPE_CHECKING:
-    from pydantic_ai import Agent as PydanticAIAgent  # type: ignore[import-not-found]
+    # Ignore is needed when the optional extra is not installed; unused-ignore
+    # prevents mypy from complaining when it IS installed.
+    from pydantic_ai import (  # type: ignore[import-not-found, unused-ignore]
+        Agent as PydanticAIAgent,
+    )
 
     from pyre_agents.runtime import PyreSystem
 

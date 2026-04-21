@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - Added `pyre_agents.adapters.langgraph.supervise()` — wraps a LangGraph compiled-graph factory to isolate concurrent graph runs. Orthogonal to LangGraph's own Checkpointer (which handles within-graph durability); this adapter handles cross-graph isolation.
 - Added `pyre-agents[pydantic-ai]`, `pyre-agents[crewai]`, and `pyre-agents[langgraph]` optional-deps extras.
 - Added runnable examples in `examples/pydantic_ai_resilient.py`, `examples/crewai_resilient.py`, `examples/langgraph_resilient.py`, and a no-deps side-by-side in `examples/without_vs_with_pyre.py`.
+- Added `examples/research_assistant.py`: a multi-perspective research workflow built on Pyre + the pydantic-ai adapter. Three supervised perspective agents run concurrently, one's provider crashes mid-run, Pyre isolates and restarts it with history intact, and a synthesizer combines the three outputs. Uses `FunctionModel` for a deterministic runnable demo; swap to a real model for live runs.
 
 ## 0.1.0 - 2026-03-13
 

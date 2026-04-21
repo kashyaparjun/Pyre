@@ -31,7 +31,9 @@ from pyre_agents.ref import AgentRef
 from pyre_agents.results import CallResult
 
 if TYPE_CHECKING:
-    from langgraph.graph.state import CompiledStateGraph  # type: ignore[import-not-found]
+    from langgraph.graph.state import (  # type: ignore[import-not-found, unused-ignore]
+        CompiledStateGraph,
+    )
 
     from pyre_agents.runtime import PyreSystem
 

@@ -25,7 +25,7 @@ from pyre_agents.ref import AgentRef
 from pyre_agents.results import CallResult
 
 if TYPE_CHECKING:
-    from crewai import Crew  # type: ignore[import-not-found]
+    from crewai import Crew  # type: ignore[import-not-found, unused-ignore]
 
     from pyre_agents.runtime import PyreSystem
 
