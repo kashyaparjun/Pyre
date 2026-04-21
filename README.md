@@ -168,6 +168,55 @@ Full runtime surface: `Pyre.start`, `spawn` (with `preserve_state_on_restart=Tru
 opt-in), `create_supervisor` (`one_for_one`, `one_for_all`, `rest_for_one`,
 nested groups, restart intensity), `call`, `cast`, `send_after`, `stop`.
 
+## Runtime semantics
+
+**What you catch.** All Pyre runtime errors inherit from `PyreError`:
+
+| Exception | Raised when | Agent state after |
+|-----------|-------------|-------------------|
+| `AgentInvocationError` | a handler raised; supervisor restarted the agent | alive, ready for next call |
+| `AgentTerminatedError` | the agent (or its supervisor) exceeded restart intensity | dead; further calls keep raising this |
+| `AgentNotFoundError` | you called on a name that was never spawned or was stopped | — |
+
+A typical try/except:
+
+```python
+from pyre_agents import AgentInvocationError, AgentTerminatedError
+
+try:
+    result = await ref.call("do_thing", payload)
+except AgentInvocationError:
+    # Transient: handler crashed, Pyre restarted the agent. Safe to retry.
+    result = await ref.call("do_thing", payload)
+except AgentTerminatedError:
+    # Permanent: the agent blew its restart budget. Escalate — respawn,
+    # page oncall, fail the request.
+    raise
+```
+
+**Restart intensity.** `spawn(..., max_restarts=3, within_ms=5000)` means: if
+the agent crashes more than 3 times inside a 5-second rolling window, it is
+marked terminated. The same policy applies at the supervisor level — a group
+whose aggregate crashes blow the budget tears down every child in it (and any
+nested supervisors).
+
+**Observability.** `PyreSystem.metrics()` returns a `RuntimeMetrics`
+dataclass with queue-depth percentiles, restart-latency percentiles,
+dropped messages (mailbox saturation), and backpressure rejections. Poll it
+from your own metrics pipeline:
+
+```python
+metrics = system.metrics()
+# Push metrics.queue_depth_percentiles["p99"] etc. to your dashboard.
+```
+
+**Shutdown.** `await system.stop_system()` clears the agent and supervisor
+tables and marks the system stopped. **It does not await in-flight
+handler tasks** — if you have long-running calls outstanding, await them
+(or cancel them) yourself before calling `stop_system`. Always call
+`stop_system` in a `finally` clause so test runs and short-lived scripts
+release state cleanly.
+
 ## Development
 
 ```bash
