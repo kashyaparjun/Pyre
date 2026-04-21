@@ -36,15 +36,28 @@ defmodule PyreBridge.Codec do
     end
   end
 
+  @known_message_types ~w(execute result error register deregister spawn stop ping pong)
+
   @spec unpack_envelope(binary()) :: {:ok, map()} | {:error, term()}
   def unpack_envelope(payload) when is_binary(payload) do
-    # Optimized: Skip validation for performance, just normalize
+    # Cheap validation on the hot path: ensure the payload is a map with a
+    # known message type. Full required-field validation stays off the hot
+    # path (callers that need it can still call Envelope.validate/1).
     with {:ok, unpacked} <- unpack_payload(payload),
-         true <- is_map(unpacked) do
-      {:ok, normalize_from_wire(unpacked)}
-    else
-      false -> {:error, :envelope_not_map}
-      {:error, _} = err -> err
+         {:ok, envelope_map} <- ensure_map(unpacked),
+         normalized = normalize_from_wire(envelope_map),
+         {:ok, _} <- ensure_known_type(normalized) do
+      {:ok, normalized}
+    end
+  end
+
+  defp ensure_map(value) when is_map(value), do: {:ok, value}
+  defp ensure_map(_), do: {:error, :envelope_not_map}
+
+  defp ensure_known_type(envelope) do
+    case Map.get(envelope, :type) || Map.get(envelope, "type") do
+      type when type in @known_message_types -> {:ok, type}
+      _ -> {:error, :unknown_message_type}
     end
   end
 
