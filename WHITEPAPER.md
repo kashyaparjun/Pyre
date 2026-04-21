@@ -13,14 +13,17 @@ AI agent systems are hitting a reliability wall. Python's asyncio-based framewor
 
 **Pyre solves this by bridging Python's AI ecosystem with the BEAM's operational excellence.**
 
-Under the hood, Pyre's validated bridge architecture places each agent behind a lightweight BEAM process supervised by OTP's battle-tested supervision trees. In the current validation runs, incremental memory scaled at **3.8KB per additional agent**, while the Elixir-side process footprint remained in the low-kilobyte range. Your agent logic—LLM calls, tool execution, data processing—runs in Python. The orchestration layer runs on the BEAM, providing preemptive scheduling, automatic crash recovery, and process isolation that Python's runtime cannot match.
+Under the hood, Pyre's validated bridge architecture places each agent behind a lightweight BEAM process supervised by OTP's battle-tested supervision trees. In the current validation runs, incremental memory scaled at **3.8KB per additional agent on the BEAM side** (plus ~1–2KB for the corresponding Python handler) on top of a fixed ~80MB runtime base. Your agent logic—LLM calls, tool execution, data processing—runs in Python. The orchestration layer runs on the BEAM, providing preemptive scheduling, automatic crash recovery, and process isolation that Python's runtime cannot match.
+
+Pyre ships one-line adapters for the three largest Python agent frameworks — **pydantic-ai**, **CrewAI**, and **LangGraph** — so existing agents gain supervised isolation without rewriting their handler code. For pydantic-ai this means conversation history survives crashes that escape the framework's own retry layer; for CrewAI, concurrent crews are isolated from each other; for LangGraph, independent graph runs no longer share fate.
 
 **Key Results (Rigorously Validated):**
 - **42,940 messages/second** throughput per bridge connection
 - **0.11ms median latency** (p99: 0.20ms) for cross-runtime calls
 - **611ms cold start** for the Elixir runtime
-- **3.8KB per agent** incremental memory overhead in rigorous validation
+- **~5KB marginal memory per additional supervised agent** (~3.8KB BEAM + ~1–2KB Python handler) in rigorous validation
 - **100% automatic restart success** with configurable strategies
+- **One-line adapters** for pydantic-ai, CrewAI, and LangGraph; drop-in for existing agent code
 
 This whitepaper explains why existing Python approaches fall short, how Pyre's dual-runtime architecture works, and presents the empirical validation for the bridge and supervision claims measured in this repository.
 
