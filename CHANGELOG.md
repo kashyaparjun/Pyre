@@ -2,14 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## 0.2.1 - 2026-04-22
 
-- `pyre_agents.adapters.google_adk.supervise()` — fifth framework adapter, wraps a `google-adk` `Agent` so `Runner.run_async()` flows through a Pyre supervised process. Session state lives in the caller's `SessionService` (defaults to `InMemorySessionService`); `preserve_state_on_restart` keeps the `(user_id, session_id)` pointer across crashes so the next run continues the same session.
-- `pyre-agents[google-adk]` optional-deps extra.
-- `examples/google_adk_resilient.py` — runnable demo with a stub `Runner` + `SessionService` that simulates a transient 503 on turn 2. Swap the stubs out (one arg change) to run live against Gemini/Vertex.
+First release with a fully-accurate changelog for what's on PyPI. The
+`0.2.0` wheel on PyPI was built from a tree that already contained the
+OpenAI Agents SDK and Google ADK adapters (they'd been merged before
+`uv build`), but the `0.2.0` changelog entry below listed only three
+adapters. `0.2.1` corrects the record and rolls in everything shipped
+since.
+
+### Added
+
 - `pyre_agents.adapters.openai_agents.supervise()` — fourth framework adapter, wraps an `openai-agents` `Agent` so `Runner.run()` calls flow through a Pyre supervised process with automatic history threading via `to_input_list()`. `preserve_state_on_restart` keeps the last-committed input list intact across crashes.
 - `pyre-agents[openai-agents]` optional-deps extra.
-- `examples/openai_agents_resilient.py` — runnable demo using a real `openai-agents.Agent` with a stub `Runner` that simulates a transient 503 on turn 2. Swap the stub for the real Runner (one-line change) to go live against OpenAI.
+- `examples/openai_agents_resilient.py` — runnable demo with a stub `Runner` that simulates a transient 503 on turn 2.
+- `pyre_agents.adapters.google_adk.supervise()` — fifth framework adapter, wraps a `google-adk` `Agent` so `Runner.run_async()` flows through a Pyre supervised process. Session state lives in the caller's `SessionService` (defaults to `InMemorySessionService`); `preserve_state_on_restart` keeps the `(user_id, session_id)` pointer across crashes so the next run continues the same session.
+- `pyre-agents[google-adk]` optional-deps extra.
+- `examples/google_adk_resilient.py` — runnable demo with a stub `Runner` + `SessionService` that simulates a transient 503 on turn 2.
+- `examples/usage/` — basic happy-path example per adapter. All five run without API keys; the LangGraph one builds a real `StateGraph` with three nodes.
+- Smoke tests for every `examples/usage/*_basic.py` and the ADK resilient example.
+
+### Changed
+
+- README repositioned around framework-agnostic orchestration: Pyre is framed as the supervision layer over whatever agent framework you already use, rather than a pydantic-ai-centric fault-tolerance wedge.
+- README gains PyPI badges and a `pip install pyre-agents` quickstart line now that the package is published.
 
 ## 0.2.0 - 2026-04-21
 
