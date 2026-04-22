@@ -1,23 +1,45 @@
 # Pyre
 
-Write Python. Think in processes.
+**The supervisor for your Python agents — whatever framework you picked.**
 
-Pyre gives Python agents the fault-tolerance and supervision semantics of the
-BEAM. One agent's crash can't kill the others. Conversation state survives
-restarts. Your existing pydantic-ai or CrewAI code keeps working — the adapter
-is one line.
+You already chose an agent framework — pydantic-ai, CrewAI, LangGraph,
+OpenAI Agents SDK, Google ADK. Each handles prompting, tools, and state
+well on its own. None of them handle *running many of them together*:
+isolating a crash in one crew from the others, restarting a flaky agent
+without losing its conversation, draining safely on shutdown, mixing
+agents from different frameworks in one system.
+
+Pyre is the orchestration layer that sits above all of them. One
+`supervise()` call per agent, regardless of framework. BEAM-style
+supervision semantics. Your agent code is unchanged.
+
+```python
+# Three frameworks, one supervised system.
+planner   = await supervise_pydantic_ai(planner_agent,   system=system, name="planner")
+research  = await supervise_crewai   (research_factory,  system=system, name="research")
+writer    = await supervise_adk      (writer_agent,      system=system, name="writer")
+
+# They run concurrently. If the CrewAI crew crashes, the pydantic-ai
+# planner and ADK writer keep going. The crew restarts with its
+# last-committed state intact.
+```
 
 ## Why Pyre
 
-Production agent systems hit three walls Python can't solve cleanly: massive
-concurrency, fault isolation, and automatic recovery. Pyre wraps each agent in
-a supervised BEAM process so:
+Once you have more than one agent in production, the questions stop
+being about prompting and start being about orchestration: what happens
+when one crashes? How do you run hundreds concurrently without them
+starving each other? How do you shut down cleanly? How do you mix
+frameworks without wrapping every call in try/except?
 
-- **True isolation**: Each agent is a BEAM process with its own heap. No shared mutable state.
-- **Built-in supervision**: Crashed agents restart automatically. No try/except boilerplate.
-- **Preemptive scheduling**: One slow agent can't starve the others.
-- **State survives crashes**: Opt in to `preserve_state_on_restart` and the last-committed state is kept across restarts — conversation history, counters, anything.
-- **Python-first API**: Pydantic state models, async handlers, familiar patterns.
+Pyre solves those questions once, at the supervisor layer:
+
+- **Framework-agnostic orchestration**: five adapters ship today (pydantic-ai, CrewAI, LangGraph, OpenAI Agents SDK, Google ADK). Mix them freely inside one supervision tree.
+- **True fault isolation**: one agent's crash can't kill the others. Every supervised agent has its own process identity; supervisors apply `one_for_one` / `one_for_all` / `rest_for_one` policies you already know from OTP.
+- **Automatic recovery with state**: opt in to `preserve_state_on_restart` and the last-committed state (conversation history, session pointers, counters) is kept across restarts. No custom checkpointer per framework.
+- **Preemptive-style fair scheduling**: one slow agent can't starve the others, even under asyncio.
+- **Graceful shutdown**: `stop_system(drain_timeout_s=...)` rejects new calls, drains in-flight handlers, and exits cleanly. No orphaned runs.
+- **Python-first API**: async handlers, pydantic state models, familiar patterns. The Elixir/BEAM bridge is opt-in for very-high-concurrency deployments.
 
 ## Architecture
 
@@ -99,15 +121,15 @@ the bridge is not the bottleneck for any realistic LLM-bound workload.
 - [`uv`](https://github.com/astral-sh/uv)
 - Elixir + Mix (only required for cross-runtime tests and the Elixir bridge; not needed for the in-process Python runtime or any adapter)
 
-## Quickstart: supervise a pydantic-ai agent
+## Quickstart: pick your framework, wrap it in one line
 
-Install the extra:
+Install Pyre with the extras for whatever you use:
 
 ```bash
-uv add 'pyre-agents[pydantic-ai]'
+uv add 'pyre-agents[pydantic-ai,crewai,langgraph,openai-agents,google-adk]'
 ```
 
-Wrap your existing agent in one line:
+Every adapter has the same shape: `supervise(agent_or_factory, system=..., name=...)` returns a handle you can call concurrently. Here's pydantic-ai:
 
 ```python
 import asyncio
@@ -130,7 +152,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-CrewAI and LangGraph have the same shape — see [Framework adapters](#framework-adapters) below.
+Swap `pyre_agents.adapters.pydantic_ai` for `.crewai`, `.langgraph`, `.openai_agents`, or `.google_adk` to get the same supervision semantics over a different framework. See the full adapter table in [Framework adapters](#framework-adapters) below, and one happy-path example per adapter in [`examples/usage/`](examples/usage/).
 
 ## See it in 30 seconds
 
@@ -168,8 +190,12 @@ uv run --with 'pydantic-ai>=1.0' python examples/research_assistant.py --live
 
 ## Framework adapters
 
-Pyre ships thin adapters that wrap existing Python agent frameworks so their
-runs survive crashes without rewriting any agent code.
+Pyre doesn't compete with pydantic-ai, CrewAI, LangGraph, OpenAI Agents
+SDK, or Google ADK — it orchestrates them. Each adapter is a thin wrapper
+that takes a native agent (or factory) and returns a supervised handle.
+Agent code is not modified; you keep every feature the framework gives
+you — tools, handoffs, checkpointers, sessions — and gain supervision,
+concurrency isolation, and crash recovery on top.
 
 - **pydantic-ai** (`pyre-agents[pydantic-ai]`) — `pyre_agents.adapters.pydantic_ai.supervise(agent, system=..., name=...)` returns a supervised handle whose `.run(prompt)` threads `message_history` through a Pyre process. Crashes that escape pydantic-ai's own error handling trigger a restart that keeps the last-committed history intact.
 - **CrewAI** (`pyre-agents[crewai]`) — `pyre_agents.adapters.crewai.supervise(crew_factory, system=..., name=...)` returns a supervised handle whose `.kickoff(inputs)` runs on a fresh `Crew` instance from the factory. One crew's crash cannot take down another supervised crew. Sync `kickoff()` is offloaded to a thread so concurrency is real.
