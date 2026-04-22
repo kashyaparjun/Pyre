@@ -91,3 +91,34 @@ def test_research_assistant_recovers_and_synthesizes() -> None:
     assert "[technical]" in stdout
     assert "[business]" in stdout
     assert "[risk]" in stdout
+
+
+USAGE = EXAMPLES / "usage"
+
+
+def test_usage_crewai_basic() -> None:
+    stdout = _run(USAGE / "crewai_basic.py")
+    assert "total kickoffs: 2" in stdout
+
+
+def test_usage_langgraph_basic() -> None:
+    stdout = _run(USAGE / "langgraph_basic.py")
+    assert "total invocations: 2" in stdout
+
+
+def test_usage_pydantic_ai_basic() -> None:
+    pytest.importorskip("pydantic_ai", reason="pydantic-ai extra not installed")
+    stdout = _run(USAGE / "pydantic_ai_basic.py")
+    assert "history length: 4" in stdout
+
+
+def test_usage_openai_agents_basic() -> None:
+    pytest.importorskip("agents", reason="openai-agents extra not installed")
+    stdout = _run(USAGE / "openai_agents_basic.py")
+    assert "history length: 4" in stdout
+
+
+def test_usage_google_adk_basic() -> None:
+    pytest.importorskip("google.adk", reason="google-adk extra not installed")
+    stdout = _run(USAGE / "google_adk_basic.py", timeout=60.0)
+    assert "session events: 4" in stdout
