@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- `pyre_agents.adapters.google_adk.supervise()` — fifth framework adapter, wraps a `google-adk` `Agent` so `Runner.run_async()` flows through a Pyre supervised process. Session state lives in the caller's `SessionService` (defaults to `InMemorySessionService`); `preserve_state_on_restart` keeps the `(user_id, session_id)` pointer across crashes so the next run continues the same session.
+- `pyre-agents[google-adk]` optional-deps extra.
+- `examples/google_adk_resilient.py` — runnable demo with a stub `Runner` + `SessionService` that simulates a transient 503 on turn 2. Swap the stubs out (one arg change) to run live against Gemini/Vertex.
 - `pyre_agents.adapters.openai_agents.supervise()` — fourth framework adapter, wraps an `openai-agents` `Agent` so `Runner.run()` calls flow through a Pyre supervised process with automatic history threading via `to_input_list()`. `preserve_state_on_restart` keeps the last-committed input list intact across crashes.
 - `pyre-agents[openai-agents]` optional-deps extra.
 - `examples/openai_agents_resilient.py` — runnable demo using a real `openai-agents.Agent` with a stub `Runner` that simulates a transient 503 on turn 2. Swap the stub for the real Runner (one-line change) to go live against OpenAI.

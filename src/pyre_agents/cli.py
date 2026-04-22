@@ -143,6 +143,8 @@ _ADAPTER_EXTRAS = (
     ("pydantic-ai", "pydantic_ai", "pyre_agents.adapters.pydantic_ai"),
     ("crewai", "crewai", "pyre_agents.adapters.crewai"),
     ("langgraph", "langgraph", "pyre_agents.adapters.langgraph"),
+    ("openai-agents", "agents", "pyre_agents.adapters.openai_agents"),
+    ("google-adk", "google.adk", "pyre_agents.adapters.google_adk"),
 )
 
 

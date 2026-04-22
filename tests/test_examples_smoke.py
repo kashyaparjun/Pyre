@@ -71,6 +71,15 @@ def test_openai_agents_resilient_preserves_history_across_crash() -> None:
     assert "history=4" in stdout
 
 
+def test_google_adk_resilient_preserves_session_across_crash() -> None:
+    pytest.importorskip("google.adk", reason="google-adk extra not installed")
+    stdout = _run(EXAMPLES / "google_adk_resilient.py", timeout=60.0)
+    assert "turn 1:" in stdout
+    assert "turn 2 crashed as expected" in stdout
+    assert "turn 3:" in stdout
+    assert "history=4" in stdout
+
+
 def test_research_assistant_recovers_and_synthesizes() -> None:
     pytest.importorskip("pydantic_ai", reason="pydantic-ai extra not installed")
     stdout = _run(EXAMPLES / "research_assistant.py", timeout=60.0)

@@ -46,6 +46,7 @@ flowchart LR
       crew["CrewAI Crew"]
       lg["LangGraph CompiledStateGraph"]
       oa["OpenAI Agents SDK Agent"]
+      adk["Google ADK Agent"]
     end
     subgraph BEAM["Elixir / BEAM bridge (optional)"]
       bridge["Unix-domain-socket bridge<br/>MessagePack envelopes"]
@@ -57,6 +58,7 @@ flowchart LR
     agent2 -. wraps .-> crew
     agent3 -. wraps .-> lg
     agent3 -. wraps .-> oa
+    agent3 -. wraps .-> adk
     Pyre -. cross-runtime calls .-> bridge
     bridge --> beam
 ```
@@ -88,7 +90,7 @@ the bridge is not the bottleneck for any realistic LLM-bound workload.
 ## Status
 
 - Phases 1–4 (bridge protocol, agent lifecycle, supervision trees, packaging): complete
-- Adapters: [pydantic-ai](src/pyre_agents/adapters/pydantic_ai.py), [CrewAI](src/pyre_agents/adapters/crewai.py), [LangGraph](src/pyre_agents/adapters/langgraph.py)
+- Adapters: [pydantic-ai](src/pyre_agents/adapters/pydantic_ai.py), [CrewAI](src/pyre_agents/adapters/crewai.py), [LangGraph](src/pyre_agents/adapters/langgraph.py), [OpenAI Agents SDK](src/pyre_agents/adapters/openai_agents.py), [Google ADK](src/pyre_agents/adapters/google_adk.py)
 - Current focus: Phase 5 (advanced features, more adapters)
 
 ## Requirements
@@ -173,6 +175,7 @@ runs survive crashes without rewriting any agent code.
 - **CrewAI** (`pyre-agents[crewai]`) — `pyre_agents.adapters.crewai.supervise(crew_factory, system=..., name=...)` returns a supervised handle whose `.kickoff(inputs)` runs on a fresh `Crew` instance from the factory. One crew's crash cannot take down another supervised crew. Sync `kickoff()` is offloaded to a thread so concurrency is real.
 - **LangGraph** (`pyre-agents[langgraph]`) — `pyre_agents.adapters.langgraph.supervise(graph_factory, system=..., name=...)` returns a supervised handle whose `.invoke(input, config=...)` runs a fresh compiled graph on each call. LangGraph already has durable execution via Checkpointer; the adapter adds **isolation between concurrent graph runs** on top of that.
 - **OpenAI Agents SDK** (`pyre-agents[openai-agents]`) — `pyre_agents.adapters.openai_agents.supervise(agent, system=..., name=...)` returns a supervised handle whose `.run(input)` flows through `Runner.run` with message history threaded automatically. Crashes that escape the SDK's error handlers trigger a restart with the last-committed input-list intact.
+- **Google ADK** (`pyre-agents[google-adk]`) — `pyre_agents.adapters.google_adk.supervise(agent, system=..., name=..., session_service=..., runner=...)` returns a supervised handle whose `.run(input)` calls `Runner.run_async` against the ADK `SessionService` of your choice (defaults to `InMemorySessionService`). Crashes restart the bridge with the `(user_id, session_id)` pointer preserved so the next run continues the same session.
 
 Runnable crash-recovery demos:
 
@@ -181,6 +184,7 @@ uv run --with 'pydantic-ai>=1.0' python examples/pydantic_ai_resilient.py
 uv run python examples/crewai_resilient.py
 uv run python examples/langgraph_resilient.py
 uv run --with 'openai-agents>=0.2' python examples/openai_agents_resilient.py
+uv run --with 'google-adk>=1.0' python examples/google_adk_resilient.py
 ```
 
 ## Writing a custom Agent
