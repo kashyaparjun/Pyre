@@ -1,12 +1,15 @@
 """CrewAI + Pyre — basic usage.
 
-Run with:  uv run python examples/usage/crewai.py
+Run with:  uv run python examples/usage/crewai_basic.py
 
-The adapter wraps a crew *factory* (a zero-arg callable that returns a
-fresh crew) rather than a live crew, because CrewAI crews carry per-run
-state. Any object whose factory returns ``kickoff(inputs=...)`` works —
-real ``crewai.Crew`` plugs in as-is. Below we use a tiny stand-in so the
-example runs without an API key.
+The adapter wraps a crew *factory* — a zero-arg callable that returns a
+fresh crew. Any object whose factory returns ``kickoff(inputs=...)``
+works, so a real ``crewai.Crew`` built from real ``Agent`` / ``Task``
+objects plugs in unchanged.
+
+A real CrewAI crew executes its tasks via an LLM, so this example uses
+a minimal stand-in to keep the run LLM-free. For a crash-isolation demo
+with the same stand-in pattern, see ``examples/crewai_resilient.py``.
 """
 
 from __future__ import annotations

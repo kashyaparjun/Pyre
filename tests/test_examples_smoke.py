@@ -102,8 +102,10 @@ def test_usage_crewai_basic() -> None:
 
 
 def test_usage_langgraph_basic() -> None:
+    pytest.importorskip("langgraph", reason="langgraph extra not installed")
     stdout = _run(USAGE / "langgraph_basic.py")
-    assert "total invocations: 2" in stdout
+    assert "total graph invocations: 2" in stdout
+    assert "Reviewed:" in stdout
 
 
 def test_usage_pydantic_ai_basic() -> None:
