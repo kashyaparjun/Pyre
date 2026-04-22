@@ -121,9 +121,10 @@ the bridge is not the bottleneck for any realistic LLM-bound workload.
 
 ## Status
 
+- **0.2.1 released on PyPI** — `pip install pyre-agents`
 - Phases 1–4 (bridge protocol, agent lifecycle, supervision trees, packaging): complete
-- Adapters: [pydantic-ai](src/pyre_agents/adapters/pydantic_ai.py), [CrewAI](src/pyre_agents/adapters/crewai.py), [LangGraph](src/pyre_agents/adapters/langgraph.py), [OpenAI Agents SDK](src/pyre_agents/adapters/openai_agents.py), [Google ADK](src/pyre_agents/adapters/google_adk.py)
-- Current focus: Phase 5 (advanced features, more adapters)
+- Adapters shipped: [pydantic-ai](src/pyre_agents/adapters/pydantic_ai.py), [CrewAI](src/pyre_agents/adapters/crewai.py), [LangGraph](src/pyre_agents/adapters/langgraph.py), [OpenAI Agents SDK](src/pyre_agents/adapters/openai_agents.py), [Google ADK](src/pyre_agents/adapters/google_adk.py)
+- Current focus: distributed supervision across BEAM nodes, observability hooks, more adapters on request
 
 ## Requirements
 
