@@ -1,6 +1,16 @@
 # Pyre
 
+[![PyPI](https://img.shields.io/pypi/v/pyre-agents.svg)](https://pypi.org/project/pyre-agents/)
+[![Python](https://img.shields.io/pypi/pyversions/pyre-agents.svg)](https://pypi.org/project/pyre-agents/)
+[![License](https://img.shields.io/pypi/l/pyre-agents.svg)](LICENSE)
+
 **The supervisor for your Python agents — whatever framework you picked.**
+
+```bash
+pip install pyre-agents
+# or with an adapter extra:
+pip install 'pyre-agents[pydantic-ai]'
+```
 
 You already chose an agent framework — pydantic-ai, CrewAI, LangGraph,
 OpenAI Agents SDK, Google ADK. Each handles prompting, tools, and state
